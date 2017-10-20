@@ -37,3 +37,8 @@
 /OOSL/OOSL/OOSL.vcxproj.user
 /OOSL/OOSL/OOSL.vcxproj.filters
 /OOSL/OOSL/OOSL.vcxproj
+*.log
+*.idb
+*.pdb
+*.tlog
+*.ilk
