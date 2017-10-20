@@ -4,6 +4,7 @@
 #define OOSL_AST_H
 
 #include <string>
+#include <vector>
 
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/spirit/home/x3/support/ast/position_tagged.hpp>
