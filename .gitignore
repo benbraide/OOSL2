@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+/OOSL/OOSL/Debug/OOSL.tlog
+/OOSL/OOSL/Debug
+/OOSL/Debug
+/OOSL/.vs/OOSL/v15
+/OOSL/OOSL/OOSL.vcxproj.user
+/OOSL/OOSL/OOSL.vcxproj.filters
+/OOSL/OOSL/OOSL.vcxproj
