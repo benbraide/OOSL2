@@ -38,6 +38,8 @@ namespace oosl{
 
 			typedef stack stack_type;
 
+			virtual const std::string &name() const = 0;
+
 			virtual register_value_type type() const = 0;
 
 			virtual size_type size() const = 0;
@@ -96,12 +98,16 @@ namespace oosl{
 		};
 
 		template <class value_type>
-		class register_value : public register_value_base{
+		class basic_register_value : public register_value_base{
 		public:
 			typedef value_type value_type;
 
-			register_value()
-				: value_(){}
+			basic_register_value(const std::string &name, value_type *value_ref)
+				: name_(name), value_ref_(value_ref){}
+
+			virtual const std::string &name() const override{
+				return name_;
+			}
 
 			virtual register_value_type type() const override{
 				if (std::is_same_v<value_type, byte_type>)
@@ -133,31 +139,31 @@ namespace oosl{
 			}
 
 			virtual byte_type read_byte() const override{
-				return static_cast<byte_type>(value_);
+				return static_cast<byte_type>(*value_ref_);
 			}
 
 			virtual word_type read_word() const override{
-				return static_cast<word_type>(value_);
+				return static_cast<word_type>(*value_ref_);
 			}
 
 			virtual dword_type read_dword() const override{
-				return static_cast<dword_type>(value_);
+				return static_cast<dword_type>(*value_ref_);
 			}
 
 			virtual qword_type read_qword() const override{
-				return static_cast<qword_type>(value_);
+				return static_cast<qword_type>(*value_ref_);
 			}
 
 			virtual float read_float() const override{
-				return static_cast<float>(value_);
+				return static_cast<float>(*value_ref_);
 			}
 
 			virtual double read_double() const override{
-				return static_cast<double>(value_);
+				return static_cast<double>(*value_ref_);
 			}
 
 			virtual long double read_ldouble() const override{
-				return static_cast<long double>(value_);
+				return static_cast<long double>(*value_ref_);
 			}
 
 			virtual char *read_address() const override{
@@ -165,35 +171,35 @@ namespace oosl{
 			}
 
 			virtual void read(void *buffer, size_type size) const override{
-				memcpy(buffer, &value_, size);
+				memcpy(buffer, value_ref_, size);
 			}
 
 			virtual void write_byte(byte_type value) override{
-				value_ = static_cast<value_type>(value);
+				*value_ref_ = static_cast<value_type>(value);
 			}
 
 			virtual void write_word(word_type value) override{
-				value_ = static_cast<value_type>(value);
+				*value_ref_ = static_cast<value_type>(value);
 			}
 
 			virtual void write_dword(dword_type value) override{
-				value_ = static_cast<value_type>(value);
+				*value_ref_ = static_cast<value_type>(value);
 			}
 
 			virtual void write_qword(qword_type value) override{
-				value_ = static_cast<value_type>(value);
+				*value_ref_ = static_cast<value_type>(value);
 			}
 
 			virtual void write_float(float value) override{
-				value_ = static_cast<value_type>(value);
+				*value_ref_ = static_cast<value_type>(value);
 			}
 
 			virtual void write_double(double value) override{
-				value_ = static_cast<value_type>(value);
+				*value_ref_ = static_cast<value_type>(value);
 			}
 
 			virtual void write_ldouble(long double value) override{
-				value_ = static_cast<value_type>(value);
+				*value_ref_ = static_cast<value_type>(value);
 			}
 
 			virtual void write_address(const char *value) override{
@@ -201,21 +207,47 @@ namespace oosl{
 			}
 
 			virtual void write(const void *buffer, size_type size) override{
-				memcpy(&value_, buffer, size);
+				memcpy(value_ref_, buffer, size);
 			}
 
 			virtual char *push_onto_stack(char *stack_pointer, stack_type &stack) override{
-				return stack.push(stack_pointer, value_);
+				return stack.push(stack_pointer, *value_ref_);
 			}
 
 			virtual char *pop_from_stack(char *stack_pointer, stack_type &stack) override{
-				value_ = stack.pop<value_type>(stack_pointer);
+				*value_ref_ = stack.pop<value_type>(stack_pointer);
 				return stack_pointer;
 			}
+
+			template <typename target_type>
+			target_type *low() const{
+				return reinterpret_cast<target_type *>(value_ref_);
+			}
+
+			template <typename target_type>
+			target_type *high() const{
+				return (reinterpret_cast<target_type *>(value_ref_) + 1);
+			}
+
+		private:
+			std::string name_;
+			value_type *value_ref_;
+		};
+
+		template <class value_type>
+		class register_value : public basic_register_value<value_type>{
+		public:
+			typedef basic_register_value<value_type> base_type;
+
+			explicit register_value(const std::string &name, value_type value = value_type())
+				: base_type(name, &value_), value_(value){}
 
 		private:
 			value_type value_;
 		};
+
+		template <class value_type>
+		using register_ref_value = basic_register_value<value_type>;
 
 		class register_{
 		public:
@@ -229,9 +261,34 @@ namespace oosl{
 
 			register_();
 
-			register_value_base *find(const std::string &key) const;
+			register_value_base *find(std::string key) const;
+
+			static void to_lower(std::string &value);
 
 		private:
+			template <typename value_type>
+			void add_range_(int from, int to){
+				std::string name;
+				for (; from <= to; ++from){//Add entries
+					name = ("$r" + std::to_string(from));
+					map_[name] = std::make_shared<register_value<value_type>>(name);
+				}
+			}
+
+			template <typename value_type, typename smaller_type>
+			void add_(const std::string &name, const std::string &low, const std::string &high){
+				auto value = std::make_shared<register_value<value_type>>(name);
+				if (!low.empty())
+					map_[low] = std::make_shared<register_ref_value<smaller_type>>(name, value->low<smaller_type>());
+
+				if (!high.empty())
+					map_[high] = std::make_shared<register_ref_value<smaller_type>>(name, value->high<smaller_type>());
+
+				map_[name] = value;
+			}
+
+			void add_(const std::string &name, const std::string &_32, const std::string &_16, const std::string &low, const std::string &high);
+
 			map_type map_;
 		};
 	}

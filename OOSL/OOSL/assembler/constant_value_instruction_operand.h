@@ -15,6 +15,14 @@ namespace oosl{
 			explicit constant_value_instruction_operand(value_type value = value_type())
 				: value_(value){}
 
+			virtual instruction_operand_type type() const override{
+				return instruction_operand_type::constant_value;
+			}
+
+			virtual void print(writer_type &writer) const override{
+				writer.write(std::to_string(value_));
+			}
+
 			virtual byte_type read_byte() const override{
 				return static_cast<byte_type>(value_);
 			}
@@ -29,6 +37,18 @@ namespace oosl{
 
 			virtual qword_type read_qword() const override{
 				return static_cast<qword_type>(value_);
+			}
+
+			virtual float read_float() const override{
+				return static_cast<float>(value_);
+			}
+
+			virtual double read_double() const override{
+				return static_cast<double>(value_);
+			}
+
+			virtual long double read_ldouble() const override{
+				return static_cast<long double>(value_);
 			}
 
 		private:

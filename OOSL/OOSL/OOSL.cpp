@@ -1,8 +1,11 @@
 #include "memory/memory_collection.h"
+#include "memory/memory_register.h"
 
 #include "parser/ast/literal_ast.h"
 #include "parser/ast/constant_value_ast.h"
 
 int main(){
-    return 0;
+	oosl::memory::register_ reg;
+
+	return 0;
 }

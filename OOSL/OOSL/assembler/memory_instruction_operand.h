@@ -1,17 +1,17 @@
 #pragma once
 
-#ifndef OOSL_REGISTER_VALUE_INSTRUCTION_OPERAND_H
-#define OOSL_REGISTER_VALUE_INSTRUCTION_OPERAND_H
+#include <memory>
 
 #include "instruction_operand_base.h"
 
 namespace oosl{
 	namespace assembler{
-		class register_value_instruction_operand : public instruction_operand_base{
+		class memory_instruction_operand : public instruction_operand_base{
 		public:
-			typedef oosl::memory::register_value_base register_value_type;
+			typedef std::size_t size_type;
+			typedef std::shared_ptr<instruction_operand_base> instruction_operand_base_ptr_type;
 
-			explicit register_value_instruction_operand(register_value_type &value);
+			explicit memory_instruction_operand(code_type code, instruction_operand_base_ptr_type value);
 
 			virtual instruction_operand_type type() const override;
 
@@ -60,6 +60,37 @@ namespace oosl{
 			virtual long double read_ldouble() const override;
 
 		private:
+			template <typename target_type>
+			target_type read_(code_type code = code_type::unknown) const{
+				switch ((code == code_type::unknown) ? code_ : code){
+				case code_type::byte:
+					return read_<target_type, __int8>();
+				case code_type::word:
+					return read_<target_type, __int16>();
+				case code_type::dword:
+					return read_<target_type, __int32>();
+				case code_type::qword:
+					return read_<target_type, __int64>();
+				case code_type::float_:
+					return read_<target_type, float>();
+				case code_type::double_:
+					return read_<target_type, double>();
+				case code_type::ldouble:
+					return read_<target_type, long double>();
+				default:
+					break;
+				}
+
+				throw instruction_error::bad_conversion;
+			}
+
+			template <typename target_type, typename source_type>
+			target_type read_() const{
+				auto source = source_type();
+				memcpy(&source, reinterpret_cast<void *>(value_->type()), sizeof(source_type));
+				return static_cast<target_type>(source);
+			}
+
 			instruction_operand_base &eval_(operator_type op, const instruction_operand_base &rhs);
 
 			template <typename value_type>
@@ -102,7 +133,8 @@ namespace oosl{
 
 			template <typename value_type>
 			instruction_operand_base &assign_(value_type value){
-				value_->write(value);
+				auto address = reinterpret_cast<void *>(value_->type());
+				memcpy(address, &value, sizeof(value_type));
 				return *this;
 			}
 
@@ -113,9 +145,8 @@ namespace oosl{
 				return (less ? (lhs < rhs) : (lhs == rhs));
 			}
 
-			register_value_type *value_;
+			code_type code_;
+			instruction_operand_base_ptr_type value_;
 		};
 	}
 }
-
-#endif /* !OOSL_REGISTER_VALUE_INSTRUCTION_OPERAND_H */

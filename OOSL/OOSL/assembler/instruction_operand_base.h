@@ -3,6 +3,7 @@
 #ifndef OOSL_INSTRUCTION_OPERAND_BASE_H
 #define OOSL_INSTRUCTION_OPERAND_BASE_H
 
+#include "../common/writer_base.h"
 #include "../memory/memory_register.h"
 
 namespace oosl{
@@ -10,7 +11,16 @@ namespace oosl{
 		enum class instruction_error{
 			nil,
 			bad_operation,
+			ambiguous_operation,
 			bad_conversion,
+		};
+
+		enum class instruction_operand_type{
+			nil,
+			constant_value,
+			register_value,
+			memory,
+			expression,
 		};
 
 		class instruction_operand_base{
@@ -19,6 +29,31 @@ namespace oosl{
 			typedef unsigned __int16 word_type;
 			typedef unsigned __int32 dword_type;
 			typedef unsigned __int64 qword_type;
+
+			typedef std::size_t size_type;
+			typedef oosl::common::writer_base writer_type;
+			typedef oosl::memory::register_value_type code_type;
+
+			enum class operator_type{
+				add,
+				sub,
+				mult,
+				div,
+				mod,
+				bit_and,
+				bit_or,
+				bit_xor,
+				lshift,
+				rshift,
+			};
+
+			virtual instruction_operand_type type() const = 0;
+
+			virtual code_type code() const{
+				throw instruction_error::ambiguous_operation;
+			}
+
+			virtual void print(writer_type &writer) const = 0;
 
 			virtual instruction_operand_base &operator =(const instruction_operand_base &rhs){
 				throw instruction_error::bad_operation;

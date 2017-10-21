@@ -1,26 +1,54 @@
 #include "memory_register.h"
 
 oosl::memory::register_::register_(){
-	for (auto index = 0; index < 33; ++index)//Add 64 bit entries
-		map_["$r" + std::to_string(index)] = std::make_shared<register_value<qword_type>>();
+	add_("rax", "eax", "ax", "al", "ah");
+	add_("rbx", "ebx", "bx", "bl", "bh");
+	add_("rcx", "ecx", "cx", "cl", "ch");
+	add_("rdx", "edx", "dx", "dl", "dh");
 
-	for (auto index = 33; index < 41; ++index)//Add 32 bit entries
-		map_["$r" + std::to_string(index)] = std::make_shared<register_value<dword_type>>();
+	add_<qword_type, dword_type>("eip", "ip", "");
+	add_<qword_type, dword_type>("esp", "sp", "");
+	add_<qword_type, dword_type>("ebp", "bp", "");
 
-	for (auto index = 41; index < 47; ++index)//Add 16 bit entries
-		map_["$r" + std::to_string(index)] = std::make_shared<register_value<word_type>>();
+	add_<qword_type, dword_type>("esi", "si", "");
+	add_<qword_type, dword_type>("edi", "di", "");
 
-	for (auto index = 47; index < 53; ++index)//Add 8 bit entries
-		map_["$r" + std::to_string(index)] = std::make_shared<register_value<byte_type>>();
+	add_range_<qword_type>(0, 7);
+	add_range_<dword_type>(8, 16);
+	add_range_<word_type>(17, 25);
+	add_range_<byte_type>(26, 34);
 
-	map_["$sp"] = map_["$r29"];//Stack Pointer
-	map_["$sf"] = map_["$r30"];//Stack Frame
-	map_["$ip"] = map_["$r31"];//Instruction Pointer
+	add_range_<float>(35, 43);
+	add_range_<double>(44, 52);
+	add_range_<long double>(53, 61);
 }
 
-oosl::memory::register_value_base *oosl::memory::register_::find(const std::string &key) const{
+oosl::memory::register_value_base *oosl::memory::register_::find(std::string key) const{
+	to_lower(key);
+
 	auto entry = map_.find(key);
 	if (entry == map_.end())//Error
 		throw register_error::not_found;
+
 	return entry->second.get();
+}
+
+void oosl::memory::register_::to_lower(std::string &value){
+	for (auto &c : value)
+		c = tolower(c);
+}
+
+void oosl::memory::register_::add_(const std::string &name, const std::string &_32, const std::string &_16, const std::string &low, const std::string &high){
+	auto value = std::make_shared<register_value<qword_type>>(name);
+
+	auto _32_value = std::make_shared<register_ref_value<dword_type>>(_32, value->low<dword_type>());
+	auto _16_value = std::make_shared<register_ref_value<word_type>>(_16, _32_value->low<word_type>());
+
+	map_[low] = std::make_shared<register_ref_value<byte_type>>(low, _16_value->low<byte_type>());
+	map_[high] = std::make_shared<register_ref_value<byte_type>>(high, _16_value->high<byte_type>());
+
+	map_[_16] = _16_value;
+	map_[_32] = _32_value;
+
+	map_[name] = value;
 }

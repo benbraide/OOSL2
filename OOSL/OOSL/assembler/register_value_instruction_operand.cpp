@@ -3,6 +3,18 @@
 oosl::assembler::register_value_instruction_operand::register_value_instruction_operand(register_value_type &value)
 	: value_(&value){}
 
+oosl::assembler::instruction_operand_type oosl::assembler::register_value_instruction_operand::type() const {
+	return instruction_operand_type::register_value;
+}
+
+oosl::assembler::instruction_operand_base::code_type oosl::assembler::register_value_instruction_operand::code() const{
+	return value_->type();
+}
+
+void oosl::assembler::register_value_instruction_operand::print(writer_type &writer) const{
+	writer.write(value_->name());
+}
+
 bool oosl::assembler::register_value_instruction_operand::operator==(const instruction_operand_base &rhs) const{
 	return comp_(false, rhs);
 }
