@@ -1,6 +1,7 @@
 #include "memory_register.h"
 
-oosl::memory::register_::register_(){
+oosl::memory::register_::register_()
+	: flags_(register_flag::nil){
 	add_("rax", "eax", "ax", "al", "ah");
 	add_("rbx", "ebx", "bx", "bl", "bh");
 	add_("rcx", "ecx", "cx", "cl", "ch");
@@ -31,6 +32,17 @@ oosl::memory::register_value_base *oosl::memory::register_::find(std::string key
 		throw register_error::not_found;
 
 	return entry->second.get();
+}
+
+void oosl::memory::register_::update_flag(register_flag flag, bool clear){
+	if (clear)
+		OOSL_REMOVE(flags_, flag);
+	else//Set
+		OOSL_SET(flags_, flag);
+}
+
+void oosl::memory::register_::update_zero_flag(bool clear){
+	update_flag(register_flag::zero, clear);
 }
 
 void oosl::memory::register_::to_lower(std::string &value){

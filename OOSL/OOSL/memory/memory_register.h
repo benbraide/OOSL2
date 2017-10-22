@@ -7,6 +7,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include "../common/macro.h"
+
 #include "memory_stack.h"
 
 namespace oosl{
@@ -25,6 +27,11 @@ namespace oosl{
 			double_,
 			ldouble,
 			unknown,
+		};
+
+		enum class register_flag : unsigned int{
+			nil				= (0 << 0x0000),
+			zero			= (1 << 0x0000),
 		};
 
 		class register_value_base{
@@ -263,6 +270,10 @@ namespace oosl{
 
 			register_value_base *find(std::string key) const;
 
+			void update_flag(register_flag flag, bool clear);
+
+			void update_zero_flag(bool clear);
+
 			static void to_lower(std::string &value);
 
 		private:
@@ -289,8 +300,11 @@ namespace oosl{
 
 			void add_(const std::string &name, const std::string &_32, const std::string &_16, const std::string &low, const std::string &high);
 
+			register_flag flags_;
 			map_type map_;
 		};
+
+		OOSL_MAKE_OPERATORS(register_flag);
 	}
 }
 
