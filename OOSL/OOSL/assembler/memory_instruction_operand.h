@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "vm.h"
 #include "instruction_operand_base.h"
 
 namespace oosl{
@@ -85,9 +86,7 @@ namespace oosl{
 
 			template <typename target_type, typename source_type>
 			target_type read_() const{
-				auto source = source_type();
-				memcpy(&source, reinterpret_cast<void *>(value_->type()), sizeof(source_type));
-				return static_cast<target_type>(source);
+				return static_cast<target_type>(vm::memory.read<source_type>(oosl::memory::block_id{ value_->read_qword(), 1u }));
 			}
 
 			instruction_operand_base &eval_(operator_type op, const instruction_operand_base &rhs);
