@@ -1,6 +1,6 @@
 #include "memory_instruction_operand.h"
 
-oosl::assembler::memory_instruction_operand::memory_instruction_operand(code_type code, instruction_operand_base_ptr_type value)
+oosl::assembler::memory_instruction_operand::memory_instruction_operand(code_type code, ptr_type value)
 	: code_(code), value_(value){}
 
 oosl::assembler::instruction_operand_type oosl::assembler::memory_instruction_operand::type() const{

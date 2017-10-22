@@ -19,6 +19,12 @@ namespace oosl{
 
 			virtual void print(writer_type &writer) const override;
 
+			virtual instruction_operand_base &operator ~() override;
+
+			virtual instruction_operand_base &operator ++() override;
+
+			virtual instruction_operand_base &operator --() override;
+
 			virtual instruction_operand_base &operator =(const instruction_operand_base &rhs) override;
 
 			virtual instruction_operand_base &operator +=(const instruction_operand_base &rhs) override;
@@ -59,7 +65,20 @@ namespace oosl{
 
 			virtual long double read_ldouble() const override;
 
+			virtual char *push_onto_stack(char *stack_pointer, stack_type &stack) override;
+
+			virtual char *pop_from_stack(char *stack_pointer, stack_type &stack) override;
+
 		private:
+			instruction_operand_base &inc_(bool add);
+
+			template <typename value_type>
+			instruction_operand_base &inc_(bool add, value_type value){
+				if (add)
+					return assign_(static_cast<value_type>(value + static_cast<value_type>(1)));
+				return assign_(static_cast<value_type>(value - static_cast<value_type>(1)));
+			}
+
 			instruction_operand_base &eval_(operator_type op, const instruction_operand_base &rhs);
 
 			template <typename value_type>

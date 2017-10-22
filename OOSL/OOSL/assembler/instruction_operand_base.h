@@ -3,6 +3,8 @@
 #ifndef OOSL_INSTRUCTION_OPERAND_BASE_H
 #define OOSL_INSTRUCTION_OPERAND_BASE_H
 
+#include <memory>
+
 #include "../common/writer_base.h"
 #include "../memory/memory_register.h"
 
@@ -23,7 +25,7 @@ namespace oosl{
 			expression,
 		};
 
-		class instruction_operand_base{
+		class instruction_operand_base : public std::enable_shared_from_this<instruction_operand_base>{
 		public:
 			typedef unsigned __int8 byte_type;
 			typedef unsigned __int16 word_type;
@@ -32,7 +34,11 @@ namespace oosl{
 
 			typedef std::size_t size_type;
 			typedef oosl::common::writer_base writer_type;
+
+			typedef oosl::memory::stack stack_type;
 			typedef oosl::memory::register_value_type code_type;
+
+			typedef std::shared_ptr<instruction_operand_base> ptr_type;
 
 			enum class operator_type{
 				add,
@@ -45,7 +51,14 @@ namespace oosl{
 				bit_xor,
 				lshift,
 				rshift,
+				not,
+				inc,
+				dec,
 			};
+
+			virtual ptr_type reflect(){
+				return shared_from_this();
+			}
 
 			virtual instruction_operand_type type() const = 0;
 
@@ -54,6 +67,26 @@ namespace oosl{
 			}
 
 			virtual void print(writer_type &writer) const = 0;
+
+			virtual ptr_type eval(){
+				return reflect();
+			}
+
+			virtual ptr_type apply_operator(operator_type op, const instruction_operand_base &rhs){
+				throw instruction_error::bad_operation;
+			}
+
+			virtual instruction_operand_base &operator ~(){
+				throw instruction_error::bad_operation;
+			}
+
+			virtual instruction_operand_base &operator ++(){
+				throw instruction_error::bad_operation;
+			}
+
+			virtual instruction_operand_base &operator --(){
+				throw instruction_error::bad_operation;
+			}
 
 			virtual instruction_operand_base &operator =(const instruction_operand_base &rhs){
 				throw instruction_error::bad_operation;
@@ -149,6 +182,14 @@ namespace oosl{
 
 			virtual long double read_ldouble() const{
 				throw instruction_error::bad_conversion;
+			}
+
+			virtual char *push_onto_stack(char *stack_pointer, stack_type &stack){
+				throw instruction_error::bad_operation;
+			}
+
+			virtual char *pop_from_stack(char *stack_pointer, stack_type &stack){
+				throw instruction_error::bad_operation;
 			}
 		};
 	}

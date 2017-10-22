@@ -9,9 +9,8 @@ namespace oosl{
 		class memory_instruction_operand : public instruction_operand_base{
 		public:
 			typedef std::size_t size_type;
-			typedef std::shared_ptr<instruction_operand_base> instruction_operand_base_ptr_type;
 
-			explicit memory_instruction_operand(code_type code, instruction_operand_base_ptr_type value);
+			explicit memory_instruction_operand(code_type code, ptr_type value);
 
 			virtual instruction_operand_type type() const override;
 
@@ -146,7 +145,7 @@ namespace oosl{
 			}
 
 			code_type code_;
-			instruction_operand_base_ptr_type value_;
+			ptr_type value_;
 		};
 	}
 }

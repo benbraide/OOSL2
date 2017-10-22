@@ -15,6 +15,31 @@ void oosl::assembler::register_value_instruction_operand::print(writer_type &wri
 	writer.write(value_->name());
 }
 
+oosl::assembler::instruction_operand_base &oosl::assembler::register_value_instruction_operand::operator~(){
+	switch (value_->type()){
+	case oosl::memory::register_value_type::byte:
+		return assign_(static_cast<byte_type>(~value_->read<byte_type>()));
+	case oosl::memory::register_value_type::word:
+		return assign_(static_cast<word_type>(~value_->read<word_type>()));
+	case oosl::memory::register_value_type::dword:
+		return assign_(static_cast<dword_type>(~value_->read<dword_type>()));
+	case oosl::memory::register_value_type::qword:
+		return assign_(static_cast<qword_type>(~value_->read<qword_type>()));
+	default:
+		break;
+	}
+
+	throw instruction_error::bad_operation;
+}
+
+oosl::assembler::instruction_operand_base & oosl::assembler::register_value_instruction_operand::operator++(){
+	return inc_(true);
+}
+
+oosl::assembler::instruction_operand_base & oosl::assembler::register_value_instruction_operand::operator--(){
+	return inc_(false);
+}
+
 bool oosl::assembler::register_value_instruction_operand::operator==(const instruction_operand_base &rhs) const{
 	return comp_(false, rhs);
 }
@@ -112,6 +137,31 @@ double oosl::assembler::register_value_instruction_operand::read_double() const{
 
 long double oosl::assembler::register_value_instruction_operand::read_ldouble() const{
 	return value_->read_ldouble();
+}
+
+char *oosl::assembler::register_value_instruction_operand::push_onto_stack(char *stack_pointer, stack_type &stack){
+	return value_->push_onto_stack(stack_pointer, stack);
+}
+
+char *oosl::assembler::register_value_instruction_operand::pop_from_stack(char *stack_pointer, stack_type &stack){
+	return value_->pop_from_stack(stack_pointer, stack);
+}
+
+oosl::assembler::instruction_operand_base &oosl::assembler::register_value_instruction_operand::inc_(bool add){
+	switch (value_->type()){
+	case oosl::memory::register_value_type::byte:
+		return inc_(add, value_->read<byte_type>());
+	case oosl::memory::register_value_type::word:
+		return inc_(add, value_->read<word_type>());
+	case oosl::memory::register_value_type::dword:
+		return inc_(add, value_->read<dword_type>());
+	case oosl::memory::register_value_type::qword:
+		return inc_(add, value_->read<qword_type>());
+	default:
+		break;
+	}
+
+	throw instruction_error::bad_operation;
 }
 
 oosl::assembler::instruction_operand_base &oosl::assembler::register_value_instruction_operand::eval_(operator_type op, const instruction_operand_base &rhs){
