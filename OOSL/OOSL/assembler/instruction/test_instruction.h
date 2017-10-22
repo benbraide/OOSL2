@@ -1,21 +1,21 @@
 #pragma once
 
-#ifndef OOSL_MOV_INSTRUCTION_H
-#define OOSL_MOV_INSTRUCTION_H
+#ifndef OOSL_TEST_INSTRUCTION_H
+#define OOSL_TEST_INSTRUCTION_H
 
 #include "binary_instruction.h"
 
 namespace oosl{
 	namespace assembler{
 		namespace instruction{
-			class mov : public binary{
+			class test : public binary{
 			public:
 				typedef binary base_type;
 
-				OOSL_INS_CTORS(mov)
+				OOSL_INS_CTORS(test)
 
 				virtual id_type id() const override{
-					return id_type::mov;
+					return id_type::test;
 				}
 
 				virtual void execute() const override{
@@ -26,4 +26,4 @@ namespace oosl{
 	}
 }
 
-#endif /* !OOSL_MOV_INSTRUCTION_H */
+#endif /* !OOSL_TEST_INSTRUCTION_H */

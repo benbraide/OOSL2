@@ -10,6 +10,8 @@ namespace oosl{
 		namespace instruction{
 			class nop : public no_operand{
 			public:
+				typedef no_operand base_type;
+
 				OOSL_INS_CTORS(nop)
 
 				virtual id_type id() const override{

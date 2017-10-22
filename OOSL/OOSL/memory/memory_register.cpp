@@ -42,7 +42,25 @@ void oosl::memory::register_::update_flag(register_flag flag, bool clear){
 }
 
 void oosl::memory::register_::update_zero_flag(bool clear){
+	update_flag(register_flag::less, true);
 	update_flag(register_flag::zero, clear);
+}
+
+void oosl::memory::register_::update_less_flag(bool clear){
+	update_flag(register_flag::zero, true);
+	update_flag(register_flag::less, clear);
+}
+
+bool oosl::memory::register_::has_flag(register_flag flag) const{
+	return OOSL_IS(flags_, flag);
+}
+
+bool oosl::memory::register_::has_zero_flag() const{
+	return has_flag(register_flag::zero);
+}
+
+bool oosl::memory::register_::has_less_flag() const{
+	return has_flag(register_flag::less);
 }
 
 void oosl::memory::register_::to_lower(std::string &value){

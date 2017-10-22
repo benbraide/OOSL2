@@ -9,8 +9,8 @@
 
 #define OOSL_INS_CTORS(name)						\
 template <class... args_type>						\
-name(args_type &&... args)							\
-	: binary(std::forward<args_type>(args)...){}	\
+explicit name(args_type &&... args)					\
+	: base_type(std::forward<args_type>(args)...){}	\
 													\
 virtual ~name() = default;
 

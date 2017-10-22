@@ -12,6 +12,8 @@ namespace oosl{
 			template <instruction::id id_value>
 			class unary_arithmetic : public unary{
 			public:
+				typedef unary base_type;
+
 				OOSL_INS_CTORS(unary_arithmetic)
 
 				virtual id_type id() const override{
@@ -38,6 +40,8 @@ namespace oosl{
 			template <instruction::id id_value>
 			class binary_arithmetic : public binary{
 			public:
+				typedef binary base_type;
+
 				OOSL_INS_CTORS(binary_arithmetic)
 
 				virtual id_type id() const override{

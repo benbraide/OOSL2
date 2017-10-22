@@ -32,6 +32,7 @@ namespace oosl{
 		enum class register_flag : unsigned int{
 			nil				= (0 << 0x0000),
 			zero			= (1 << 0x0000),
+			less			= (1 << 0x0001),
 		};
 
 		class register_value_base{
@@ -273,6 +274,14 @@ namespace oosl{
 			void update_flag(register_flag flag, bool clear);
 
 			void update_zero_flag(bool clear);
+
+			void update_less_flag(bool clear);
+
+			bool has_flag(register_flag flag) const;
+
+			bool has_zero_flag() const;
+
+			bool has_less_flag() const;
 
 			static void to_lower(std::string &value);
 

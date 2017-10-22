@@ -13,6 +13,8 @@ namespace oosl{
 			template <bool push>
 			class stack : public unary{
 			public:
+				typedef unary base_type;
+
 				OOSL_INS_CTORS(stack)
 
 				virtual id_type id() const override{
