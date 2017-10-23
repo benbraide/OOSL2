@@ -57,7 +57,7 @@ long double oosl::assembler::identifier_instruction_operand::read_ldouble() cons
 }
 
 oosl::assembler::instruction_operand_base::qword_type oosl::assembler::identifier_instruction_operand::read_() const{
-	auto value = vm::find_identifier(value_);
+	auto value = vm::instructions.find_label(value_);
 	if (value == 0u)//Identifier not found
 		throw instruction_error::bad_identifier;
 	return value;

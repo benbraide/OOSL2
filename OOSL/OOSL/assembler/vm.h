@@ -6,8 +6,16 @@
 #include "../memory/memory_register.h"
 #include "../memory/memory_collection.h"
 
+#include "instruction_set.h"
+#include "instructions_section.h"
+
 namespace oosl{
 	namespace assembler{
+		enum class vm_state : unsigned int{
+			nil				= (0 << 0x0000),
+			exit			= (1 << 0x0000),
+		};
+
 		class vm{
 		public:
 			typedef unsigned __int64 uint64_type;
@@ -17,18 +25,28 @@ namespace oosl{
 			typedef oosl::memory::register_ register_type;
 			typedef oosl::memory::collection memory_type;
 
-			typedef std::unordered_map<std::string, uint64_type> map_type;
+			typedef std::shared_ptr<instructions_section> instructions_section_ptr_type;
+			typedef std::unordered_map<section_id, instructions_section_ptr_type> instructions_section_map_type;
 
-			static uint64_type find_identifier(const std::string &key);
+			static void add_section(section_id id);
+
+			static void execute();
+
+			static vm_state global_states;
+			static thread_local vm_state thread_states;
 
 			static size_type stack_size;
 			static memory_type memory;
 
+			static instructions_set instructions;
+			static instructions_section_map_type instructions_section_map;
+			static instructions_section *active_section;
+
 			static thread_local stack_type stack;
 			static thread_local register_type register_;
-
-			static thread_local map_type map;
 		};
+
+		OOSL_MAKE_OPERATORS(vm_state);
 	}
 }
 

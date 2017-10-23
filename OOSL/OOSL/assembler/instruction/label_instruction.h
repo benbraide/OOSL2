@@ -12,7 +12,11 @@ namespace oosl{
 			public:
 				typedef no_operand base_type;
 
-				OOSL_INS_CTORS(label)
+				template <class... args_type>
+				explicit label(const std::string &value, args_type &&... args)
+					: base_type(std::forward<args_type>(args)...), value_(value){}
+
+				virtual ~label() = default;
 
 				virtual id_type id() const override{
 					return id_type::label;
@@ -22,7 +26,14 @@ namespace oosl{
 					return 0u;
 				}
 
+				virtual const std::string &label_value() const override{
+					return value_;
+				}
+
 				virtual void execute() const override{}
+
+			private:
+				std::string value_;
 			};
 		}
 	}

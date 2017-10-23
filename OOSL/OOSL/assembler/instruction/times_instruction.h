@@ -25,9 +25,13 @@ namespace oosl{
 					return (left_ * right_->instruction_bytes());
 				}
 
+				virtual void execute_and_update_instruction_pointer() const override{
+					execute();
+				}
+
 				virtual void execute() const override{
 					for (auto i = 0u; i < left_; ++i)
-						right_->execute();//Execute instruction specified times
+						right_->execute_and_update_instruction_pointer();//Execute instruction specified times
 				}
 
 			private:
