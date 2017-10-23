@@ -45,6 +45,10 @@ namespace oosl{
 				cmp,
 				label,
 				decl,
+				db,
+				dw,
+				dd,
+				dq,
 				times,
 			};
 		}

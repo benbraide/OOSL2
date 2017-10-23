@@ -27,6 +27,7 @@ OOSL_AST_PREFIX
 
 #define OOSL_AST_DECLARE_SINGLE(name, type)					\
 struct name{												\
+	typedef type value_type;								\
 	type value;												\
 };
 
@@ -35,17 +36,6 @@ struct name : x3::position_tagged{							\
 	typedef type value_type;								\
 	value_type value;										\
 };
-
-/*
-#define OOSL_AST_DECLARE_SINGLE_VARIANT(name, ...)			\
-struct OOSL_AST_JOIN(name, _variant_type) : x3::variant<__VA_ARGS__>{\
-	using base_type::base_type;								\
-	using base_type::operator=;								\
-};															\
-															\
-struct name{												\
-	OOSL_AST_JOIN(name, _variant_type) value;				\
-};*/
 
 #define OOSL_AST_DECLARE_SINGLE_VARIANT(name, ...)			\
 struct name{												\

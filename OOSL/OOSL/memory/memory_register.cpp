@@ -15,9 +15,9 @@ oosl::memory::register_::register_()
 
 	add_qword_(9, 15);
 
-	add_float_<float>("f", 0, 4);
-	add_float_<double>("fd", 0, 4);
-	add_float_<long double>("fld", 0, 4);
+	add_float_<float>("f", 0, 3);
+	add_float_<double>("fd", 0, 3);
+	add_float_<long double>("fld", 0, 3);
 }
 
 oosl::memory::register_value_base *oosl::memory::register_::find(std::string key) const{

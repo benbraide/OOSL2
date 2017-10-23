@@ -14,6 +14,7 @@ namespace oosl{
 			class decl_operand{
 			public:
 				typedef std::size_t size_type;
+				typedef std::shared_ptr<decl_operand> ptr_type;
 
 				virtual ~decl_operand() = default;
 
@@ -135,7 +136,7 @@ namespace oosl{
 
 			private:
 				template <typename value_type>
-				void write_(value_type value, char *buffer, size_type byte_size){
+				void write_(value_type value, char *buffer, size_type byte_size) const{
 					memcpy(buffer, &value_, byte_size);
 				}
 
@@ -165,7 +166,7 @@ namespace oosl{
 
 			private:
 				template <typename value_type>
-				void write_(value_type value, char *buffer, size_type byte_size){
+				void write_(value_type value, char *buffer, size_type byte_size) const{
 					memcpy(buffer, &value_, byte_size);
 				}
 
