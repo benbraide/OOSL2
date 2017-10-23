@@ -15,6 +15,10 @@ namespace oosl{
 
 				virtual ~binary() = default;
 
+				virtual size_type instruction_bytes() const override{
+					return (left_->instruction_bytes() + right_->instruction_bytes() + 2u);
+				}
+
 				virtual void print(writer_type &writer) const override{
 					writer.write(id_to_string(id()));
 					writer.write(" ");

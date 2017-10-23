@@ -12,6 +12,10 @@ namespace oosl{
 			public:
 				virtual ~no_operand() = default;
 
+				virtual size_type instruction_bytes() const override{
+					return 2u;
+				}
+
 				virtual void print(writer_type &writer) const override{
 					writer.write(id_to_string(id()));
 				}

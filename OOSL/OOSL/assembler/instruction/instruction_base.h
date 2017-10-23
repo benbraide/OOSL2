@@ -19,6 +19,7 @@ namespace oosl{
 		namespace instruction{
 			class base{
 			public:
+				typedef std::size_t size_type;
 				typedef oosl::common::writer_base writer_type;
 
 				typedef id id_type;
@@ -27,6 +28,8 @@ namespace oosl{
 				virtual ~base() = default;
 
 				virtual id_type id() const = 0;
+
+				virtual size_type instruction_bytes() const = 0;
 
 				virtual void execute() const = 0;
 

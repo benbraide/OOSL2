@@ -15,6 +15,10 @@ namespace oosl{
 
 				virtual ~unary() = default;
 
+				virtual size_type instruction_bytes() const override{
+					return (operand_->instruction_bytes() + 2u);
+				}
+
 				virtual void print(writer_type &writer) const override{
 					writer.write(id_to_string(id()));
 					writer.write(" ");
