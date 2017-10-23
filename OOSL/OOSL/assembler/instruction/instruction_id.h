@@ -43,6 +43,9 @@ namespace oosl{
 				test,
 				not,
 				cmp,
+				label,
+				decl,
+				times,
 			};
 		}
 	}

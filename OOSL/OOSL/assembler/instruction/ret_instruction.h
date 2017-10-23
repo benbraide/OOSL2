@@ -18,8 +18,12 @@ namespace oosl{
 					return id_type::ret;
 				}
 
+				virtual void execute_and_update_instruction_pointer() const override{
+					return execute();//Prevent advancing Instruction Pointer
+				}
+
 				virtual void execute() const override{
-					//#TODO: Implement
+					assembler::vm::register_.find("rip")->pop_from_stack(assembler::vm::stack);
 				}
 			};
 		}

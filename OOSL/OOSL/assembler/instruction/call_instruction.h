@@ -3,9 +3,7 @@
 #ifndef OOSL_CALL_INSTRUCTION_H
 #define OOSL_CALL_INSTRUCTION_H
 
-#include "../vm.h"
-
-#include "unary_instruction.h"
+#include "jmp_instruction.h"
 
 namespace oosl{
 	namespace assembler{
@@ -20,8 +18,13 @@ namespace oosl{
 					return id_type::call;
 				}
 
+				virtual void execute_and_update_instruction_pointer() const override{
+					return execute();//Prevent advancing Instruction Pointer
+				}
+
 				virtual void execute() const override{
-					//#TODO: Implement
+					assembler::vm::register_.find("rip")->push_onto_stack(assembler::vm::stack);
+					jmp::do_jump(operand_->read_qword());
 				}
 			};
 		}

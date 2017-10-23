@@ -3,8 +3,6 @@
 #ifndef OOSL_JMP_INSTRUCTION_H
 #define OOSL_JMP_INSTRUCTION_H
 
-#include "../vm.h"
-
 #include "unary_instruction.h"
 
 namespace oosl{
@@ -20,10 +18,17 @@ namespace oosl{
 					return id_type::jmp;
 				}
 
+				virtual void execute_and_update_instruction_pointer() const override{
+					return execute();//Prevent advancing Instruction Pointer
+				}
+
 				virtual void execute() const override{
-					if (!test_())
-						return;//Failed test
-					//#TODO: Implement
+					if (test_())//Test passed
+						do_jump(operand_->read_qword());
+				}
+
+				static void do_jump(instruction_operand_base::qword_type address){
+					assembler::vm::register_.find("rip")->write_qword(address);
 				}
 
 			protected:

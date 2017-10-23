@@ -3,6 +3,7 @@
 #ifndef OOSL_INSTRUCTION_BASE_H
 #define OOSL_INSTRUCTION_BASE_H
 
+#include "../vm.h"
 #include "../instruction_operand_base.h"
 
 #include "instruction_id.h"
@@ -30,6 +31,12 @@ namespace oosl{
 				virtual id_type id() const = 0;
 
 				virtual size_type instruction_bytes() const = 0;
+
+				virtual void execute_and_update_instruction_pointer() const{
+					execute();
+					auto rip = assembler::vm::register_.find("rip");
+					rip->write_qword(rip->read_qword() + instruction_bytes());//Advance Instruction Pointer
+				}
 
 				virtual void execute() const = 0;
 

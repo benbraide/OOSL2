@@ -59,10 +59,6 @@ namespace oosl{
 				return instruction_operand_type::constant_value;
 			}
 
-			virtual code_type code() const override{
-				return constant_value_code<value_type>::code;
-			}
-
 			virtual void print(writer_type &writer) const override{
 				writer.write(std::to_string(value_));
 			}
@@ -72,7 +68,15 @@ namespace oosl{
 				if (resolved_rhs->type() != instruction_operand_type::constant_value)
 					throw instruction_error::bad_operation;
 
-				switch (code()){
+				auto code_value = code_type::unknown;
+				try{
+					code_value = resolved_rhs->code();
+				}
+				catch (...){
+					code_value = constant_value_code<value_type>::code;
+				}
+
+				switch (code_value){
 				case code_type::byte:
 					return eval_integral_(op, static_cast<byte_type>(value_), resolved_rhs->read_byte());
 				case code_type::word:
