@@ -11,6 +11,10 @@ oosl::assembler::instruction_operand_base::code_type oosl::assembler::expression
 	return eval_()->code();
 }
 
+oosl::assembler::instruction_operand_base::size_type oosl::assembler::expression_instruction_operand::instruction_bytes() const{
+	return left_->instruction_bytes();
+}
+
 void oosl::assembler::expression_instruction_operand::print(writer_type &writer) const{
 	left_->print(writer);
 	switch (op_){

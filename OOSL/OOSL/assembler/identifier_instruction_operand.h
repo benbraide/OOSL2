@@ -15,6 +15,8 @@ namespace oosl{
 
 			virtual code_type code() const override;
 
+			virtual size_type instruction_bytes() const override;
+
 			virtual void print(writer_type &writer) const override;
 
 			virtual ptr_type apply_operator(operator_type op, instruction_operand_base &rhs) override;

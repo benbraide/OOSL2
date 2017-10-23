@@ -11,6 +11,10 @@ oosl::assembler::instruction_operand_base::code_type oosl::assembler::register_v
 	return value_->type();
 }
 
+oosl::assembler::instruction_operand_base::size_type oosl::assembler::register_value_instruction_operand::instruction_bytes() const{
+	return value_->size();
+}
+
 void oosl::assembler::register_value_instruction_operand::print(writer_type &writer) const{
 	writer.write(value_->name());
 }

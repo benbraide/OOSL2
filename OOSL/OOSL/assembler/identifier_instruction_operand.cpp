@@ -12,6 +12,10 @@ oosl::assembler::instruction_operand_base::code_type oosl::assembler::identifier
 	return code_type::qword;
 }
 
+oosl::assembler::instruction_operand_base::size_type oosl::assembler::identifier_instruction_operand::instruction_bytes() const{
+	return sizeof(qword_type);
+}
+
 void oosl::assembler::identifier_instruction_operand::print(writer_type &writer) const{
 	writer.write(value_);
 }

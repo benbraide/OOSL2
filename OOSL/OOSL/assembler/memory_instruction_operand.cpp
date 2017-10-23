@@ -11,6 +11,10 @@ oosl::assembler::instruction_operand_base::code_type oosl::assembler::memory_ins
 	return code_;
 }
 
+oosl::assembler::memory_instruction_operand::size_type oosl::assembler::memory_instruction_operand::instruction_bytes() const{
+	return sizeof(qword_type);
+}
+
 void oosl::assembler::memory_instruction_operand::print(writer_type &writer) const{
 	writer.write("[");
 	value_->print(writer);
