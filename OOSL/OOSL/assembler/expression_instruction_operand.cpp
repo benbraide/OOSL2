@@ -54,7 +54,7 @@ oosl::assembler::instruction_operand_base::ptr_type oosl::assembler::expression_
 	return eval_();
 }
 
-oosl::assembler::instruction_operand_base::ptr_type oosl::assembler::expression_instruction_operand::apply_operator(operator_type op, const instruction_operand_base &rhs){
+oosl::assembler::instruction_operand_base::ptr_type oosl::assembler::expression_instruction_operand::apply_operator(operator_type op, instruction_operand_base &rhs){
 	return eval_()->apply_operator(op, rhs);
 }
 

@@ -16,7 +16,7 @@ void oosl::memory::stack::create(size_type data_size){
 		data_size = assembler::vm::stack_size;
 
 	auto block = assembler::vm::memory.allocate(data_size);
-	assembler::vm::register_.find("esp")->write_qword(address_ = block->address);
+	assembler::vm::register_.find("rsp")->write_qword(address_ = block->address);
 
 	data_ = block->data.get();
 	max_ = (data_ + data_size);
@@ -24,4 +24,28 @@ void oosl::memory::stack::create(size_type data_size){
 
 char *oosl::memory::stack::begin() const{
 	return data_;
+}
+
+void oosl::memory::stack::push_(const char *value, size_type size){
+	auto register_ = assembler::vm::register_.find("rsp");
+
+	auto current_address = register_->read_qword();
+	auto next_address = (current_address + size);//Address after write
+
+	if ((data_ + (next_address - address_)) > max_)
+		throw stack_error::overflow;//Overflow
+
+	memcpy(data_ + current_address, value, size);//Copy bytes
+	register_->write_qword(next_address);//Update register value
+}
+
+void oosl::memory::stack::pop_(char *value, size_type size){
+	auto register_ = assembler::vm::register_.find("rsp");
+	auto current_address = register_->read_qword();
+
+	if ((current_address - address_) < size)
+		throw stack_error::underflow;//Error
+
+	memcpy(value, data_ + (current_address - size), size);//Copy bytes
+	register_->write_qword(current_address - size);//Update register value
 }

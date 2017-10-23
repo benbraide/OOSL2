@@ -2,26 +2,22 @@
 
 oosl::memory::register_::register_()
 	: flags_(register_flag::nil){
-	add_("rax", "eax", "ax", "al", "ah");
-	add_("rbx", "ebx", "bx", "bl", "bh");
-	add_("rcx", "ecx", "cx", "cl", "ch");
-	add_("rdx", "edx", "dx", "dl", "dh");
+	add_("rax", "r0", "eax", "ax", "al", "ah");
+	add_("rbx", "r1", "ebx", "bx", "bl", "bh");
+	add_("rcx", "r2", "ecx", "cx", "cl", "ch");
+	add_("rdx", "r3", "edx", "dx", "dl", "dh");
 
-	add_<qword_type, dword_type>("eip", "ip", "");
-	add_<qword_type, dword_type>("esp", "sp", "");
-	add_<qword_type, dword_type>("ebp", "bp", "");
+	add_("rsp", "r4", "esp", "sp", "", "");
+	add_("rbp", "r5", "epb", "bp", "", "");
+	add_("rsi", "r6", "esi", "si", "", "");
+	add_("rdi", "r7", "edi", "di", "", "");
+	add_("rip", "r8", "eip", "ip", "", "");
 
-	add_<qword_type, dword_type>("esi", "si", "");
-	add_<qword_type, dword_type>("edi", "di", "");
+	add_qword_(9, 15);
 
-	add_range_<qword_type>(0, 7);
-	add_range_<dword_type>(8, 16);
-	add_range_<word_type>(17, 25);
-	add_range_<byte_type>(26, 34);
-
-	add_range_<float>(35, 43);
-	add_range_<double>(44, 52);
-	add_range_<long double>(53, 61);
+	add_float_<float>("f", 0, 4);
+	add_float_<double>("fd", 0, 4);
+	add_float_<long double>("fld", 0, 4);
 }
 
 oosl::memory::register_value_base *oosl::memory::register_::find(std::string key) const{
@@ -68,17 +64,58 @@ void oosl::memory::register_::to_lower(std::string &value){
 		c = tolower(c);
 }
 
-void oosl::memory::register_::add_(const std::string &name, const std::string &_32, const std::string &_16, const std::string &low, const std::string &high){
-	auto value = std::make_shared<register_value<qword_type>>(name);
+void oosl::memory::register_::add_(const std::string &name, const std::string &alias, const std::string &_32, const std::string &_16, const std::string &low, const std::string &high){
+	typedef register_value<qword_type> qword_register_value_type;
+	typedef register_ref_value<dword_type> dword_register_value_type;
+	typedef register_ref_value<word_type> word_register_value_type;
+	typedef register_ref_value<byte_type> byte_register_value_type;
 
-	auto _32_value = std::make_shared<register_ref_value<dword_type>>(_32, value->low<dword_type>());
-	auto _16_value = std::make_shared<register_ref_value<word_type>>(_16, _32_value->low<word_type>());
+	auto value = std::make_shared<qword_register_value_type>(name);
+	auto _32_value = std::make_shared<dword_register_value_type>(_32, value->low<dword_type>());
+	auto _16_value = std::make_shared<word_register_value_type>(_16, value->low<word_type>());
+	auto _8_value = std::make_shared<byte_register_value_type>(low, value->low<byte_type>());
 
-	map_[low] = std::make_shared<register_ref_value<byte_type>>(low, _16_value->low<byte_type>());
-	map_[high] = std::make_shared<register_ref_value<byte_type>>(high, _16_value->high<byte_type>());
+	if (!low.empty())
+		map_[low] = _8_value;
+
+	if (!high.empty())
+		map_[high] = std::make_shared<byte_register_value_type>(high, _16_value->high<byte_type>());
 
 	map_[_16] = _16_value;
 	map_[_32] = _32_value;
 
 	map_[name] = value;
+	if (!alias.empty()){
+		map_[alias + "b"] = _8_value;
+		map_[alias + "w"] = _16_value;
+		map_[alias + "d"] = _32_value;
+		map_[alias] = value;
+	}
+}
+
+void oosl::memory::register_::add_qword_(int from, int to){
+	typedef register_value<qword_type> qword_register_value_type;
+	typedef register_ref_value<dword_type> dword_register_value_type;
+	typedef register_ref_value<word_type> word_register_value_type;
+	typedef register_ref_value<byte_type> byte_register_value_type;
+
+	std::string name;
+	std::shared_ptr<qword_register_value_type> value;
+	std::shared_ptr<dword_register_value_type> dword_value;
+	std::shared_ptr<word_register_value_type> word_value;
+	std::shared_ptr<byte_register_value_type> byte_value;
+
+	for (; from <= to; ++from){//Add entries
+		name = ("r" + std::to_string(from));
+		value = std::make_shared<qword_register_value_type>(name);
+
+		dword_value = std::make_shared<dword_register_value_type>(name + "d", value->low<dword_type>());
+		word_value = std::make_shared<word_register_value_type>(name + "w", value->low<word_type>());
+		byte_value = std::make_shared<byte_register_value_type>(name + "b", value->low<byte_type>());
+
+		map_[name + "b"] = byte_value;
+		map_[name + "w"] = word_value;
+		map_[name + "d"] = dword_value;
+		map_[name] = value;
+	}
 }

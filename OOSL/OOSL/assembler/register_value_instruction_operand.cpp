@@ -139,12 +139,12 @@ long double oosl::assembler::register_value_instruction_operand::read_ldouble() 
 	return value_->read_ldouble();
 }
 
-char *oosl::assembler::register_value_instruction_operand::push_onto_stack(char *stack_pointer, stack_type &stack){
-	return value_->push_onto_stack(stack_pointer, stack);
+void oosl::assembler::register_value_instruction_operand::push_onto_stack(stack_type &stack){
+	value_->push_onto_stack(stack);
 }
 
-char *oosl::assembler::register_value_instruction_operand::pop_from_stack(char *stack_pointer, stack_type &stack){
-	return value_->pop_from_stack(stack_pointer, stack);
+void oosl::assembler::register_value_instruction_operand::pop_from_stack(stack_type &stack){
+	return value_->pop_from_stack(stack);
 }
 
 oosl::assembler::instruction_operand_base &oosl::assembler::register_value_instruction_operand::inc_(bool add){

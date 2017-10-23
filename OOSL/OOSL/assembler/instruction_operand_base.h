@@ -15,6 +15,7 @@ namespace oosl{
 			bad_operation,
 			ambiguous_operation,
 			bad_conversion,
+			bad_identifier,
 		};
 
 		enum class instruction_operand_type{
@@ -23,6 +24,7 @@ namespace oosl{
 			register_value,
 			memory,
 			expression,
+			identifier,
 		};
 
 		class instruction_operand_base : public std::enable_shared_from_this<instruction_operand_base>{
@@ -72,7 +74,7 @@ namespace oosl{
 				return reflect();
 			}
 
-			virtual ptr_type apply_operator(operator_type op, const instruction_operand_base &rhs){
+			virtual ptr_type apply_operator(operator_type op, instruction_operand_base &rhs){
 				throw instruction_error::bad_operation;
 			}
 
@@ -184,11 +186,11 @@ namespace oosl{
 				throw instruction_error::bad_conversion;
 			}
 
-			virtual char *push_onto_stack(char *stack_pointer, stack_type &stack){
+			virtual void push_onto_stack(stack_type &stack){
 				throw instruction_error::bad_operation;
 			}
 
-			virtual char *pop_from_stack(char *stack_pointer, stack_type &stack){
+			virtual void pop_from_stack(stack_type &stack){
 				throw instruction_error::bad_operation;
 			}
 		};

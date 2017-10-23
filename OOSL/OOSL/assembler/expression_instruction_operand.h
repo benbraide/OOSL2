@@ -19,7 +19,7 @@ namespace oosl{
 
 			virtual ptr_type eval() override;
 
-			virtual ptr_type apply_operator(operator_type op, const instruction_operand_base &rhs) override;
+			virtual ptr_type apply_operator(operator_type op, instruction_operand_base &rhs) override;
 
 			virtual byte_type read_byte() const override;
 

@@ -25,28 +25,22 @@ namespace oosl{
 			char *begin() const;
 
 			template <typename value_type>
-			char *push(char *current, value_type value){
-				current += sizeof(value_type);
-				if (current > max_)//Overflow
-					throw stack_error::overflow;
-
-				memcpy(current, &value, sizeof(value_type));
-				return current;
+			void push(value_type value){
+				push_(reinterpret_cast<char *>(&value), sizeof(value_type));
 			}
 
 			template <typename value_type>
-			value_type pop(char *&current){
+			value_type pop(){
 				auto value = value_type();
-				memcpy(&value, current, sizeof(value_type));
-
-				current -= sizeof(value_type);
-				if (current < data_)//Underflow
-					throw stack_error::underflow;
-
+				pop_(reinterpret_cast<char *>(&value), sizeof(value_type));
 				return value;
 			}
 
 		private:
+			void push_(const char *value, size_type size);
+
+			void pop_(char *value, size_type size);
+
 			uint64_type address_;
 			char *data_;
 			char *max_;

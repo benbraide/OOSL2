@@ -100,9 +100,9 @@ namespace oosl{
 				write(&value, sizeof(value_type));
 			}
 
-			virtual char *push_onto_stack(char *stack_pointer, stack_type &stack) = 0;
+			virtual void push_onto_stack(stack_type &stack) = 0;
 
-			virtual char *pop_from_stack(char *stack_pointer, stack_type &stack) = 0;
+			virtual void pop_from_stack(stack_type &stack) = 0;
 		};
 
 		template <class value_type>
@@ -218,13 +218,12 @@ namespace oosl{
 				memcpy(value_ref_, buffer, size);
 			}
 
-			virtual char *push_onto_stack(char *stack_pointer, stack_type &stack) override{
-				return stack.push(stack_pointer, *value_ref_);
+			virtual void push_onto_stack(stack_type &stack) override{
+				stack.push(*value_ref_);
 			}
 
-			virtual char *pop_from_stack(char *stack_pointer, stack_type &stack) override{
-				*value_ref_ = stack.pop<value_type>(stack_pointer);
-				return stack_pointer;
+			virtual void pop_from_stack(stack_type &stack) override{
+				*value_ref_ = stack.pop<value_type>();
 			}
 
 			template <typename target_type>
@@ -286,15 +285,6 @@ namespace oosl{
 			static void to_lower(std::string &value);
 
 		private:
-			template <typename value_type>
-			void add_range_(int from, int to){
-				std::string name;
-				for (; from <= to; ++from){//Add entries
-					name = ("$r" + std::to_string(from));
-					map_[name] = std::make_shared<register_value<value_type>>(name);
-				}
-			}
-
 			template <typename value_type, typename smaller_type>
 			void add_(const std::string &name, const std::string &low, const std::string &high){
 				auto value = std::make_shared<register_value<value_type>>(name);
@@ -307,7 +297,18 @@ namespace oosl{
 				map_[name] = value;
 			}
 
-			void add_(const std::string &name, const std::string &_32, const std::string &_16, const std::string &low, const std::string &high);
+			void add_(const std::string &name, const std::string &alias, const std::string &_32, const std::string &_16, const std::string &low, const std::string &high);
+
+			void add_qword_(int from, int to);
+
+			template <typename value_type>
+			void add_float_(const std::string &prefix, int from, int to){
+				std::string name;
+				for (; from <= to; ++from){//Add entries
+					name = (prefix + std::to_string(from));
+					map_[name] = std::make_shared<register_value<value_type>>(name);
+				}
+			}
 
 			register_flag flags_;
 			map_type map_;

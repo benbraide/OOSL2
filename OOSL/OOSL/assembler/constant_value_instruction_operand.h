@@ -67,26 +67,26 @@ namespace oosl{
 				writer.write(std::to_string(value_));
 			}
 
-			virtual ptr_type apply_operator(operator_type op, const instruction_operand_base &rhs) override{
+			virtual ptr_type apply_operator(operator_type op, instruction_operand_base &rhs) override{
 				auto resolved_rhs = rhs.eval();
 				if (resolved_rhs->type() != instruction_operand_type::constant_value)
 					throw instruction_error::bad_operation;
 
-				switch (code(value_)){
+				switch (code()){
 				case code_type::byte:
-					return eval_integral_(op, static_cast<byte_type>(value_), resolved_rhs->read_byte(value_));
+					return eval_integral_(op, static_cast<byte_type>(value_), resolved_rhs->read_byte());
 				case code_type::word:
-					return eval_integral_(op, static_cast<word_type>(value_), resolved_rhs->read_word(value_));
+					return eval_integral_(op, static_cast<word_type>(value_), resolved_rhs->read_word());
 				case code_type::dword:
-					return eval_integral_(op, static_cast<dword_type>(value_), resolved_rhs->read_dword(value_));
+					return eval_integral_(op, static_cast<dword_type>(value_), resolved_rhs->read_dword());
 				case code_type::qword:
-					return eval_integral_(op, static_cast<qword_type>(value_), resolved_rhs->read_qword(value_));
+					return eval_integral_(op, static_cast<qword_type>(value_), resolved_rhs->read_qword());
 				case code_type::float_:
-					return eval_(op, static_cast<float>(value_), resolved_rhs->read_float(value_));
+					return eval_(op, static_cast<float>(value_), resolved_rhs->read_float());
 				case code_type::double_:
-					return eval_(op, static_cast<double>(value_), resolved_rhs->read_double(value_));
+					return eval_(op, static_cast<double>(value_), resolved_rhs->read_double());
 				case code_type::ldouble:
-					return eval_(op, static_cast<long double>(value_), resolved_rhs->read_ldouble(value_));
+					return eval_(op, static_cast<long double>(value_), resolved_rhs->read_ldouble());
 				default:
 					break;
 				}
@@ -126,12 +126,14 @@ namespace oosl{
 			template <typename value_type>
 			ptr_type eval_(operator_type op, value_type lhs, value_type rhs){
 				switch (op){
+				case operator_type::add:
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs + rhs));
 				case operator_type::sub:
-					return std::make_shared<constant_value_instruction_operand>(lhs - rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs - rhs));
 				case operator_type::mult:
-					return std::make_shared<constant_value_instruction_operand>(lhs * rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs * rhs));
 				case operator_type::div:
-					return std::make_shared<constant_value_instruction_operand>(lhs / rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs / rhs));
 				default:
 					break;
 				}
@@ -143,17 +145,17 @@ namespace oosl{
 			ptr_type eval_integral_(operator_type op, value_type lhs, value_type rhs){
 				switch (op){
 				case operator_type::mod:
-					return std::make_shared<constant_value_instruction_operand>(lhs % rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs % rhs));
 				case operator_type::bit_and:
-					return std::make_shared<constant_value_instruction_operand>(lhs & rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs & rhs));
 				case operator_type::bit_or:
-					return std::make_shared<constant_value_instruction_operand>(lhs | rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs | rhs));
 				case operator_type::bit_xor:
-					return std::make_shared<constant_value_instruction_operand>(lhs ^ rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs ^ rhs));
 				case operator_type::lshift:
-					return std::make_shared<constant_value_instruction_operand>(lhs << rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs << rhs));
 				case operator_type::rshift:
-					return std::make_shared<constant_value_instruction_operand>(lhs >> rhs);
+					return std::make_shared<constant_value_instruction_operand<value_type>>(static_cast<value_type>(lhs >> rhs));
 				default:
 					break;
 				}

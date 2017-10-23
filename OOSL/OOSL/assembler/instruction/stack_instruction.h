@@ -23,9 +23,9 @@ namespace oosl{
 
 				virtual void execute() const override{
 					if (push)
-						operand_->push_onto_stack(vm::register_.find("esp")->read_address(), vm::stack);
+						operand_->push_onto_stack(vm::stack);
 					else//Pop
-						operand_->pop_from_stack(vm::register_.find("esp")->read_address(), vm::stack);
+						operand_->pop_from_stack(vm::stack);
 				}
 			};
 

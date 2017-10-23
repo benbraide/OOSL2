@@ -65,9 +65,9 @@ namespace oosl{
 
 			virtual long double read_ldouble() const override;
 
-			virtual char *push_onto_stack(char *stack_pointer, stack_type &stack) override;
+			virtual void push_onto_stack(stack_type &stack) override;
 
-			virtual char *pop_from_stack(char *stack_pointer, stack_type &stack) override;
+			virtual void pop_from_stack(stack_type &stack) override;
 
 		private:
 			instruction_operand_base &inc_(bool add);
