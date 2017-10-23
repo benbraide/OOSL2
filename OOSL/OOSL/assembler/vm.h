@@ -28,7 +28,11 @@ namespace oosl{
 			typedef std::shared_ptr<instructions_section> instructions_section_ptr_type;
 			typedef std::unordered_map<section_id, instructions_section_ptr_type> instructions_section_map_type;
 
-			static void add_section(section_id id);
+			static void set_section(section_id id);
+
+			static instructions_section *find_section(section_id id);
+
+			static void bundle();
 
 			static void execute();
 

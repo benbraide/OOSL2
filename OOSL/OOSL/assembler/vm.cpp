@@ -1,22 +1,29 @@
 #include "instruction/instruction_base.h"
 #include "vm.h"
 
-void oosl::assembler::vm::add_section(section_id id){
-	if (instructions_section_map.find(id) != instructions_section_map.end())
-		throw instruction_error::section_redifinition;
-
-	if (active_section != nullptr){//Bundle currently active section
-		active_section->bundle();
-		active_section = nullptr;
-	}
-
-	switch (id){
-	case section_id::nil:
-		break;//Do nothing
-	default:
+void oosl::assembler::vm::set_section(section_id id){
+	auto entry = instructions_section_map.find(id);
+	if (entry != instructions_section_map.end())//Use existing
+		active_section = entry->second.get();
+	else if (id != section_id::nil)//Create new
 		active_section = (instructions_section_map[id] = std::make_shared<instructions_section>(id)).get();
-		break;
-	}
+}
+
+oosl::assembler::instructions_section *oosl::assembler::vm::find_section(section_id id){
+	auto entry = instructions_section_map.find(id);
+	return ((entry == instructions_section_map.end()) ? nullptr : entry->second.get());
+}
+
+void oosl::assembler::vm::bundle(){
+	auto section = find_section(section_id::rodata);//Read-only data
+	if (section != nullptr)
+		section->bundle();
+
+	if ((section = find_section(section_id::data)) != nullptr)//Data
+		section->bundle();
+
+	if ((section = find_section(section_id::text)) != nullptr)//Executable
+		section->bundle();
 }
 
 void oosl::assembler::vm::execute(){
