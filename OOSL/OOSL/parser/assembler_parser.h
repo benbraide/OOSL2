@@ -11,16 +11,9 @@ namespace oosl{
 			namespace ast = parser::ast;
 			namespace x3 = boost::spirit::x3;
 
-			struct asm_helper{
-				template <typename parser_type>
-				static auto keyword(parser_type &&parser){
-					return x3::lexeme[parser >> !x3::char_("$_A-Za-z0-9")];
-				};
-
-				static auto keyword(const char *value){
-					return keyword(x3::lit(value));
-				}
-			};
+			using operand_type = oosl::assembler::instruction_operand_base::ptr_type;
+			using decl_operand_type = oosl::assembler::instruction::decl_operand::ptr_type;
+			using instruction_type = oosl::assembler::instruction::base::ptr_type;
 
 			struct asm_escaped_symbols : x3::symbols<char>{
 				asm_escaped_symbols(){
@@ -232,8 +225,11 @@ namespace oosl{
 			x3::rule<class asm_section, ast::asm_section> const asm_section = "asm_section";
 			x3::rule<class asm_label, ast::asm_label> const asm_label = "asm_label";
 
-			x3::rule<class asm_expr, oosl::assembler::instruction_operand_base::ptr_type> const asm_expr = "asm_expr";
-			x3::rule<class asm_grouped_expr, ast::asm_grouped_expr> const asm_grouped_expr = "asm_grouped_expr";
+			x3::rule<class asm_expr, operand_type> const asm_expr = "asm_expr";
+			x3::rule<class asm_grouped_expr, operand_type> const asm_grouped_expr = "asm_grouped_expr";
+
+			x3::rule<class asm_expr_decl, decl_operand_type> const asm_expr_decl = "asm_expr_decl";
+			x3::rule<class asm_grouped_expr_decl, decl_operand_type> const asm_grouped_expr_decl = "asm_grouped_expr_decl";
 
 			x3::rule<class asm_memory, ast::asm_memory> const asm_memory = "asm_memory";
 			x3::rule<class asm_typed_memory, ast::asm_typed_memory> const asm_typed_memory = "asm_typed_memory";
@@ -247,6 +243,7 @@ namespace oosl{
 			x3::rule<class asm_ternary, ast::asm_ternary> const asm_ternary = "asm_ternary";
 			x3::rule<class asm_variadic, ast::asm_variadic> const asm_variadic = "asm_variadic";
 
+			x3::rule<class asm_numeric_operand_decl, ast::asm_numeric_operand_decl> const asm_numeric_operand_decl = "asm_numeric_operand_decl";
 			x3::rule<class asm_variadic_decl, ast::asm_variadic_decl> const asm_variadic_decl = "asm_variadic_decl";
 
 			x3::rule<class asm_instruction, ast::asm_instruction> const asm_instruction = "asm_instruction";
@@ -279,21 +276,41 @@ namespace oosl{
 					);
 			};
 
+			auto asm_parsed_grouped_expr = [](auto &ctx){
+				x3::_val(ctx) = std::make_shared<oosl::assembler::grouped_expression_instruction_operand>(x3::_attr(ctx));
+			};
+
+			auto asm_parsed_expr_decl = [](auto &ctx){
+				x3::_val(ctx) = std::make_shared<oosl::assembler::instruction::expr_decl_operand>(
+					boost::fusion::at<boost::mpl::int_<0>>(x3::_attr(ctx)),
+					x3::_val(ctx),
+					ast::asm_traverser::get(boost::fusion::at<boost::mpl::int_<1>>(x3::_attr(ctx)))
+					);
+			};
+
+			auto asm_parsed_grouped_decl_expr = [](auto &ctx){
+				x3::_val(ctx) = std::make_shared<oosl::assembler::instruction::grouped_expr_decl_operand>(x3::_attr(ctx));
+			};
+
 			auto const asm_integral_value_def = x3::long_long;
-			auto const asm_float_value_def = x3::double_;
+			auto const asm_float_value_def = double_;
 
 			auto const asm_integral_decl_value_def = x3::long_long;
-			auto const asm_float_decl_value_def = x3::double_;
+			auto const asm_float_decl_value_def = double_;
 
 			auto const asm_string_def = ("'" >> x3::lexeme[*(asm_escaped_symbols_ | ~x3::char_("'"))] >> "'");
-			auto const asm_identifier_def = (!asm_helper::keyword("section") >> !asm_register >> x3::lexeme[x3::char_("$_A-Za-z") >> *x3::char_("$_A-Za-z0-9")]);
-			auto const asm_register_def = asm_helper::keyword(asm_register_symbols_);
+			auto const asm_identifier_def = (!utils::keyword("section") >> !asm_register >> utils_identifier);
+			auto const asm_register_def = utils::keyword(asm_register_symbols_);
 
-			auto const asm_section_def = (asm_helper::keyword("section") > asm_section_symbols_);
-			auto const asm_label_def = (asm_identifier >> asm_helper::keyword(":"));
+			auto const asm_section_def = (utils::keyword("section") > asm_section_symbols_);
+			auto const asm_label_def = (asm_identifier >> utils::keyword(":"));
 
 			auto const asm_expr_def = (asm_non_memory_operand)[asm_parsed_single] >> *(asm_operator_symbols_ >> asm_non_memory_operand)[asm_parsed_expr];
-			auto const asm_grouped_expr_def = ('(' >> asm_expr >> ')');
+			auto const asm_grouped_expr_def = ('(' >> asm_expr >> ')')[asm_parsed_grouped_expr];
+
+			auto const asm_expr_decl_def = (asm_numeric_operand_decl)[asm_parsed_single] >> *(asm_operator_symbols_ >> asm_numeric_operand_decl)[asm_parsed_expr_decl];
+			auto const asm_grouped_expr_decl_def = ('(' >> asm_expr_decl >> ')')[asm_parsed_grouped_decl_expr];
+			auto const asm_numeric_operand_decl_def = (asm_float_decl_value | asm_integral_decl_value);
 
 			auto const asm_memory_def = ('[' >> asm_expr >> ']');
 			auto const asm_typed_memory_def = (asm_type_symbols_ >> asm_memory);
@@ -301,12 +318,12 @@ namespace oosl{
 			auto const asm_operand_def = (asm_float_value | asm_integral_value | asm_register | asm_identifier | asm_memory | asm_typed_memory);
 			auto const asm_non_memory_operand_def = (asm_integral_value | asm_float_value | asm_register | asm_identifier);
 
-			auto const asm_no_operand_def = asm_helper::keyword(asm_no_operand_mnemonic_symbols_);
-			auto const asm_unary_def = (asm_helper::keyword(asm_unary_mnemonic_symbols_) >> asm_operand);
-			auto const asm_binary_def = (asm_helper::keyword(asm_binary_mnemonic_symbols_) >> asm_operand >> ',' >> asm_operand);
-			auto const asm_ternary_def = (asm_helper::keyword(asm_binary_mnemonic_symbols_) >> asm_operand >> ',' >> asm_operand >> ',' >> asm_operand);
+			auto const asm_no_operand_def = utils::keyword(asm_no_operand_mnemonic_symbols_);
+			auto const asm_unary_def = (utils::keyword(asm_unary_mnemonic_symbols_) >> asm_operand);
+			auto const asm_binary_def = (utils::keyword(asm_binary_mnemonic_symbols_) >> asm_operand >> ',' >> asm_operand);
+			auto const asm_ternary_def = (utils::keyword(asm_binary_mnemonic_symbols_) >> asm_operand >> ',' >> asm_operand >> ',' >> asm_operand);
 
-			auto const asm_variadic_decl_def = (asm_helper::keyword(asm_variadic_mnemonic_symbols_) >> (asm_string | asm_float_decl_value | asm_integral_decl_value) % ",");
+			auto const asm_variadic_decl_def = (utils::keyword(asm_variadic_mnemonic_symbols_) >> (asm_string | asm_grouped_expr_decl | asm_expr_decl) % ",");
 
 			auto const asm_instruction_def = (asm_section | asm_no_operand | asm_unary | asm_binary | asm_ternary | asm_variadic_decl | asm_label);
 			auto const asm_instruction_set_def = (*asm_instruction);
@@ -325,6 +342,9 @@ namespace oosl{
 				asm_label,
 				asm_expr,
 				asm_grouped_expr,
+				asm_numeric_operand_decl,
+				asm_expr_decl,
+				asm_grouped_expr_decl,
 				asm_memory,
 				asm_typed_memory,
 				asm_operand,

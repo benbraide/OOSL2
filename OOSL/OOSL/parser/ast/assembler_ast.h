@@ -32,6 +32,8 @@
 #include "../../assembler/instruction/decl_instruction.h"
 #include "../../assembler/instruction/section_instruction.h"
 
+#include "../parser_utils.h"
+
 #include "ast.h"
 
 #define OOSL_AST_CREATE_UNARY(name)\
@@ -61,17 +63,11 @@ OOSL_AST_DECLARE_SINGLE_WPOS(asm_float_decl_value, double)
 OOSL_AST_DECLARE_SINGLE_WPOS(asm_string, std::vector<char>)
 OOSL_AST_DECLARE_SINGLE_WPOS(asm_register, std::string)
 
-struct asm_identifier{
-	char first;
-	std::vector<char> rest;
-};
+using asm_identifier = identifier_ast;
 
 OOSL_AST_DECLARE_SINGLE_WPOS(asm_mnemonic, oosl::assembler::instruction::id)
 OOSL_AST_DECLARE_SINGLE_WPOS(asm_section, oosl::assembler::section_id)
 OOSL_AST_DECLARE_SINGLE(asm_label, asm_identifier)
-
-OOSL_AST_DECLARE_SINGLE_WPOS(asm_type, oosl::memory::register_value_type)
-OOSL_AST_DECLARE_SINGLE_WPOS(asm_grouped_expr, operand_type)
 
 OOSL_AST_DECLARE_SINGLE_VARIANT(asm_non_memory_operand, asm_integral_value, asm_float_value, asm_identifier, asm_register)
 
@@ -83,6 +79,7 @@ struct asm_typed_memory{
 };
 
 OOSL_AST_DECLARE_SINGLE_VARIANT(asm_operand, asm_integral_value, asm_float_value, asm_identifier, asm_register, asm_memory, asm_typed_memory)
+OOSL_AST_DECLARE_SINGLE_VARIANT(asm_numeric_operand_decl, asm_integral_decl_value, asm_float_decl_value)
 
 struct asm_no_operand{
 	oosl::assembler::instruction::id mnemonic;
@@ -112,7 +109,7 @@ struct asm_variadic{
 };
 
 struct asm_variadic_decl{
-	typedef boost::variant<asm_integral_decl_value, asm_float_decl_value, asm_string> operands_type;
+	typedef boost::variant<asm_string, decl_operand_type> operands_type;
 	oosl::assembler::instruction::id mnemonic;
 	std::vector<operands_type> operands;
 };
@@ -131,6 +128,10 @@ struct asm_traverser{
 	template <typename value_type>
 	static value_type get(const value_type &ast){
 		return ast;
+	}
+
+	static decl_operand_type get(const asm_numeric_operand_decl &ast){
+		return boost::apply_visitor(asm_traverser(), ast.value);
 	}
 
 	static operand_type get(const asm_operand &ast){
@@ -352,18 +353,9 @@ OOSL_AST_ADAPT_SINGLE(asm_float_decl_value)
 OOSL_AST_ADAPT_SINGLE(asm_string)
 OOSL_AST_ADAPT_SINGLE(asm_register)
 
-BOOST_FUSION_ADAPT_STRUCT(
-	oosl::parser::ast::asm_identifier,
-	(char, first)
-	(std::vector<char>, rest)
-)
-
 OOSL_AST_ADAPT_SINGLE(asm_mnemonic)
 OOSL_AST_ADAPT_SINGLE(asm_section)
 OOSL_AST_ADAPT_SINGLE(asm_label)
-
-OOSL_AST_ADAPT_SINGLE(asm_type)
-OOSL_AST_ADAPT_SINGLE(asm_grouped_expr)
 
 OOSL_AST_ADAPT_SINGLE(asm_memory)
 
@@ -375,6 +367,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 OOSL_AST_ADAPT_SINGLE(asm_operand)
 OOSL_AST_ADAPT_SINGLE(asm_non_memory_operand)
+OOSL_AST_ADAPT_SINGLE(asm_numeric_operand_decl)
 
 BOOST_FUSION_ADAPT_STRUCT(
 	oosl::parser::ast::asm_no_operand,

@@ -39,7 +39,7 @@ namespace oosl{
 				virtual void print(writer_type &writer) const = 0;
 			};
 
-			template <std::size_t byte_size>
+			template <id id_value, std::size_t byte_size>
 			class decl : public base{
 			public:
 				typedef std::shared_ptr<decl_operand> decl_operand_ptr_type;
@@ -58,7 +58,7 @@ namespace oosl{
 				virtual ~decl() = default;
 
 				virtual id_type id() const override{
-					return id_type::decl;
+					return id_value;
 				}
 
 				virtual size_type instruction_bytes() const override{
@@ -101,10 +101,10 @@ namespace oosl{
 				operand_list_type operands_;
 			};
 
-			using byte_decl = decl<sizeof(unsigned __int8)>;
-			using word_decl = decl<sizeof(unsigned __int16)>;
-			using dword_decl = decl<sizeof(unsigned __int32)>;
-			using qword_decl = decl<sizeof(unsigned __int64)>;
+			using byte_decl = decl<id::db, sizeof(unsigned __int8)>;
+			using word_decl = decl<id::dw, sizeof(unsigned __int16)>;
+			using dword_decl = decl<id::dd, sizeof(unsigned __int32)>;
+			using qword_decl = decl<id::dq, sizeof(unsigned __int64)>;
 
 			class string_decl_operand : public decl_operand{
 			public:
