@@ -34,9 +34,20 @@ void oosl::assembler::vm::bundle(){
 }
 
 void oosl::assembler::vm::execute(){
+	static const auto rip = register_.find("rip");
+
 	OOSL_REMOVE(thread_states, vm_state::exit);
+	if (rip->read_qword() == 0u){//Find entry point
+		auto start = instructions.find_label("main");
+		if (start == 0u)//Entry point not found
+			throw instruction_error::no_main;
+		else//Update instruction pointer
+			rip->write_qword(start);
+	}
+
+	stack.create(stack_size);
 	while (!OOSL_IS(thread_states, vm_state::exit) && !OOSL_IS(global_states, vm_state::exit)){
-		auto next_instruction = instructions.find_instruction(register_.find("rip")->read_qword());
+		auto next_instruction = instructions.find_instruction(rip->read_qword());
 		if (next_instruction == nullptr)
 			throw instruction_error::bad_instruction;
 		else//Execute instruction

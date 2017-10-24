@@ -8,7 +8,7 @@ oosl::memory::register_::register_()
 	add_("rdx", "r3", "edx", "dx", "dl", "dh");
 
 	add_("rsp", "r4", "esp", "sp", "", "");
-	add_("rbp", "r5", "epb", "bp", "", "");
+	add_("rbp", "r5", "ebp", "bp", "", "");
 	add_("rsi", "r6", "esi", "si", "", "");
 	add_("rdi", "r7", "edi", "di", "", "");
 	add_("rip", "r8", "eip", "ip", "", "");

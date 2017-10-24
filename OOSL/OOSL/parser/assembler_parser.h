@@ -74,7 +74,7 @@ namespace oosl{
 						("sp", "sp")
 						("rbp", "rbp")
 						("r5", "r5")
-						("epb", "epb")
+						("ebp", "ebp")
 						("bp", "bp")
 						("rsi", "rsi")
 						("r6", "r6")

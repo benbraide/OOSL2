@@ -16,9 +16,11 @@ namespace oosl{
 			ambiguous_operation,
 			bad_conversion,
 			bad_identifier,
+			bad_operand,
 			section_redifinition,
 			bad_instruction,
 			no_section,
+			no_main,
 		};
 
 		enum class instruction_operand_type{

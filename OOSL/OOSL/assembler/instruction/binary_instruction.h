@@ -16,7 +16,15 @@ namespace oosl{
 				virtual ~binary() = default;
 
 				virtual size_type instruction_bytes() const override{
-					return (left_->instruction_bytes() + right_->instruction_bytes() + 2u);
+					auto value = left_->instruction_bytes();
+					try{
+						value += right_->instruction_bytes();
+					}
+					catch (...){//Use left operand's size
+						value += value;
+					}
+
+					return (value + 2u);
 				}
 
 				virtual void print(writer_type &writer) const override{

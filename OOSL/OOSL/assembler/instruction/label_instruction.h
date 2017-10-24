@@ -32,6 +32,10 @@ namespace oosl{
 
 				virtual void execute() const override{}
 
+				virtual void print(writer_type &writer) const override{
+					writer.write(value_).write(":");
+				}
+
 			private:
 				std::string value_;
 			};
