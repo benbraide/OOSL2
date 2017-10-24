@@ -10,7 +10,7 @@ int main(){
 	oosl::parser::ast::asm_instruction_set op;
 	std::string gram = "section .text mov eax, ebi push rip mov [eax + 4], rax";
 
-	auto r = boost::spirit::x3::phrase_parse(gram.data(), gram.data() + gram.size(), oosl::parser::assembler::asm_instruction_set, boost::spirit::x3::space, op);
+	auto r = boost::spirit::x3::phrase_parse(gram.data(), gram.data() + gram.size(), oosl::parser::assembler::asm_instruction_set, oosl::parser::assembler::asm_skip, op);
 	if (r){
 		for (auto &ins : op.value)
 			oosl::parser::ast::asm_traverser::get(ins)->create_or_add_to_section();

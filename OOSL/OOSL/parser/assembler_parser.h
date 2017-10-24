@@ -252,6 +252,8 @@ namespace oosl{
 			x3::rule<class asm_instruction, ast::asm_instruction> const asm_instruction = "asm_instruction";
 			x3::rule<class asm_instruction_set, ast::asm_instruction_set> const asm_instruction_set = "asm_instruction_set";
 
+			x3::rule<class asm_skip> const asm_skip = "asm_skip";
+
 			auto asm_parsed_string = [](auto &ctx){
 				x3::_val(ctx) = std::make_shared<oosl::assembler::instruction::string_decl_operand>(std::string(boost::begin(x3::_attr(ctx)), boost::end(x3::_attr(ctx))));
 			};
@@ -309,6 +311,8 @@ namespace oosl{
 			auto const asm_instruction_def = (asm_section | asm_no_operand | asm_unary | asm_binary | asm_ternary | asm_variadic_decl | asm_label);
 			auto const asm_instruction_set_def = (*asm_instruction);
 
+			auto const asm_skip_def = (x3::space | (';' >> *x3::omit[(x3::char_ - x3::eol)] >> x3::eol));
+
 			BOOST_SPIRIT_DEFINE(
 				asm_integral_value,
 				asm_float_value,
@@ -331,7 +335,8 @@ namespace oosl{
 				asm_ternary,
 				asm_variadic_decl,
 				asm_instruction,
-				asm_instruction_set
+				asm_instruction_set,
+				asm_skip
 			)
 		}
 	}
