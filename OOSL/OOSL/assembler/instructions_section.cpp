@@ -2,10 +2,10 @@
 #include "instructions_section.h"
 
 oosl::assembler::instructions_section::instructions_section(section_id id)
-	: id_(id){}
+	: id_(id), next_(0){}
 
 void oosl::assembler::instructions_section::add(instruction_ptr_type instruction){
-	if (instruction->id() == assembler::instruction::id::label){
+	if (instruction->id() != assembler::instruction::id::label){
 		map_[next_] = instruction;
 		next_ += instruction->instruction_bytes();
 	}

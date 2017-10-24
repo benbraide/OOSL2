@@ -18,13 +18,15 @@ virtual ~name() = default;
 namespace oosl{
 	namespace assembler{
 		namespace instruction{
-			class base{
+			class base : public std::enable_shared_from_this<base>{
 			public:
 				typedef std::size_t size_type;
 				typedef oosl::common::writer_base writer_type;
 
 				typedef id id_type;
 				typedef instruction_operand_base::ptr_type operand_type;
+
+				typedef std::shared_ptr<base> ptr_type;
 
 				virtual ~base() = default;
 
@@ -34,6 +36,10 @@ namespace oosl{
 
 				virtual const std::string &label_value() const{
 					throw instruction_error::bad_operation;
+				}
+
+				virtual void create_or_add_to_section(){
+					assembler::vm::add_instruction(shared_from_this());
 				}
 
 				virtual void execute_and_update_instruction_pointer() const{
@@ -116,10 +122,20 @@ namespace oosl{
 						return "srl";
 					case id_type::test:
 						return "test";
+					case id_type::times:
+						return "times";
 					case id_type::not:
 						return "not";
 					case id_type::cmp:
 						return "cmp";
+					case id_type::db:
+						return "db";
+					case id_type::dw:
+						return "dw";
+					case id_type::dd:
+						return "dd";
+					case id_type::dq:
+						return "dq";
 					default:
 						break;
 					}

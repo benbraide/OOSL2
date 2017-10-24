@@ -18,6 +18,7 @@ namespace oosl{
 			bad_identifier,
 			section_redifinition,
 			bad_instruction,
+			no_section,
 		};
 
 		enum class instruction_operand_type{

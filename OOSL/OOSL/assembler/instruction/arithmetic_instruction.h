@@ -90,19 +90,19 @@ namespace oosl{
 			using inc		= unary_arithmetic<id::inc>;
 			using dec		= unary_arithmetic<id::dec>;
 
-			using add		= unary_arithmetic<id::add>;
-			using sub		= unary_arithmetic<id::sub>;
+			using add		= binary_arithmetic<id::add>;
+			using sub		= binary_arithmetic<id::sub>;
 
-			using mult		= unary_arithmetic<id::mult>;
-			using div		= unary_arithmetic<id::div>;
-			using mod		= unary_arithmetic<id::mod>;
+			using mult		= binary_arithmetic<id::mult>;
+			using div		= binary_arithmetic<id::div>;
+			using mod		= binary_arithmetic<id::mod>;
 
-			using and_		= unary_arithmetic<id::and_>;
-			using xor_		= unary_arithmetic<id::xor_>;
-			using or_		= unary_arithmetic<id::or_>;
+			using and_		= binary_arithmetic<id::and_>;
+			using xor_		= binary_arithmetic<id::xor_>;
+			using or_		= binary_arithmetic<id::or_>;
 
-			using lshift	= unary_arithmetic<id::lshift>;
-			using rshift	= unary_arithmetic<id::rshift>;
+			using lshift	= binary_arithmetic<id::lshift>;
+			using rshift	= binary_arithmetic<id::rshift>;
 		}
 	}
 }

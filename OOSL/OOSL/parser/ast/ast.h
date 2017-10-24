@@ -7,6 +7,8 @@
 #include <vector>
 
 #include <boost/fusion/include/adapt_struct.hpp>
+#include <boost/fusion/adapted/mpl.hpp>
+
 #include <boost/spirit/home/x3/support/ast/position_tagged.hpp>
 #include <boost/spirit/home/x3/support/ast/variant.hpp>
 #include <boost/spirit/home/x3.hpp>
@@ -39,6 +41,12 @@ struct name : x3::position_tagged{							\
 
 #define OOSL_AST_DECLARE_SINGLE_VARIANT(name, ...)			\
 struct name{												\
+	typedef boost::variant<__VA_ARGS__> value_type;			\
+	value_type value;										\
+};
+
+#define OOSL_AST_DECLARE_SINGLE_VARIANT_WPOS(name, ...)		\
+struct name : x3::position_tagged{							\
 	typedef boost::variant<__VA_ARGS__> value_type;			\
 	value_type value;										\
 };

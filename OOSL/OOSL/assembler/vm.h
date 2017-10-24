@@ -25,12 +25,15 @@ namespace oosl{
 			typedef oosl::memory::register_ register_type;
 			typedef oosl::memory::collection memory_type;
 
+			typedef std::shared_ptr<instruction::base> instruction_ptr_type;
 			typedef std::shared_ptr<instructions_section> instructions_section_ptr_type;
 			typedef std::unordered_map<section_id, instructions_section_ptr_type> instructions_section_map_type;
 
 			static void set_section(section_id id);
 
 			static instructions_section *find_section(section_id id);
+
+			static void add_instruction(instruction_ptr_type instruction);
 
 			static void bundle();
 

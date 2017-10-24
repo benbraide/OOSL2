@@ -44,7 +44,7 @@ namespace oosl{
 			public:
 				typedef jmp base_type;
 
-				OOSL_INS_CTORS(jmp)
+				OOSL_INS_CTORS(conditional_jmp)
 
 				virtual id_type id() const override{
 					return id_value;

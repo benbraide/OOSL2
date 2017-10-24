@@ -14,6 +14,13 @@ oosl::assembler::instructions_section *oosl::assembler::vm::find_section(section
 	return ((entry == instructions_section_map.end()) ? nullptr : entry->second.get());
 }
 
+void oosl::assembler::vm::add_instruction(instruction_ptr_type instruction){
+	if (active_section == nullptr)
+		throw instruction_error::bad_instruction;
+	else//Add to active section
+		active_section->add(instruction);
+}
+
 void oosl::assembler::vm::bundle(){
 	auto section = find_section(section_id::rodata);//Read-only data
 	if (section != nullptr)

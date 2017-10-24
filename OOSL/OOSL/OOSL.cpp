@@ -7,7 +7,17 @@
 #include "parser/assembler_parser.h"
 
 int main(){
-	oosl::memory::register_ reg;
+	oosl::parser::ast::asm_instruction_set op;
+	std::string gram = "section .text mov eax, ebi push rip mov [eax + 4], rax";
+
+	auto r = boost::spirit::x3::phrase_parse(gram.data(), gram.data() + gram.size(), oosl::parser::assembler::asm_instruction_set, boost::spirit::x3::space, op);
+	if (r){
+		for (auto &ins : op.value)
+			oosl::parser::ast::asm_traverser::get(ins)->create_or_add_to_section();
+
+		oosl::assembler::vm::bundle();
+		//oosl::assembler::vm::execute();
+	}
 
 	return 0;
 }
