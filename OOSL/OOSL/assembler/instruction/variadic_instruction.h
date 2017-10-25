@@ -36,6 +36,11 @@ namespace oosl{
 						item->resolve_label();
 				}
 
+				virtual void resolve_constant() override{
+					for (auto item : operands_)
+						item->resolve_constant();
+				}
+
 				virtual void print(writer_type &writer) const override{
 					writer.write(id_to_string(id()));
 					writer.write(" ");
