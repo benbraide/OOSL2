@@ -19,6 +19,13 @@ namespace oosl{
 					return (left_->instruction_bytes() + right_->instruction_bytes() + last_->instruction_bytes() + 2u);
 				}
 
+				virtual void create_or_add_to_section() override{
+					base::create_or_add_to_section();
+					left_->resolve_label();
+					right_->resolve_label();
+					last_->resolve_label();
+				}
+
 				virtual void print(writer_type &writer) const override{
 					writer.write(id_to_string(id()));
 					writer.write(" ");

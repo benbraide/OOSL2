@@ -25,7 +25,8 @@ namespace oosl{
 			typedef oosl::memory::register_ register_type;
 			typedef oosl::memory::collection memory_type;
 
-			typedef std::shared_ptr<instruction::base> instruction_ptr_type;
+			typedef instruction::base instruction_type;
+			typedef std::shared_ptr<instruction_type> instruction_ptr_type;
 			typedef std::shared_ptr<instructions_section> instructions_section_ptr_type;
 			typedef std::unordered_map<section_id, instructions_section_ptr_type> instructions_section_map_type;
 
@@ -47,7 +48,10 @@ namespace oosl{
 
 			static instructions_set instructions;
 			static instructions_section_map_type instructions_section_map;
+
 			static instructions_section *active_section;
+			static instruction_type *active_label;
+			static instruction_type *active_relative_label;
 
 			static thread_local stack_type stack;
 			static thread_local register_type register_;

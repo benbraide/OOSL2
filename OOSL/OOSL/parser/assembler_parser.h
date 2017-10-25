@@ -219,11 +219,14 @@ namespace oosl{
 			x3::rule<class asm_float_decl_value, ast::asm_float_decl_value> const asm_float_decl_value = "asm_float_decl_value";
 
 			x3::rule<class asm_string, ast::asm_string> const asm_string = "asm_string";
-			x3::rule<class asm_identifier, ast::asm_identifier> const asm_identifier = "asm_identifier";
 			x3::rule<class asm_register, ast::asm_register> const asm_register = "asm_register";
+
+			x3::rule<class asm_identifier, ast::asm_identifier> const asm_identifier = "asm_identifier";
+			x3::rule<class asm_absolute_identifier, ast::asm_absolute_identifier> const asm_absolute_identifier = "asm_absolute_identifier";
 
 			x3::rule<class asm_section, ast::asm_section> const asm_section = "asm_section";
 			x3::rule<class asm_label, ast::asm_label> const asm_label = "asm_label";
+			x3::rule<class asm_relative_label, ast::asm_relative_label> const asm_relative_label = "asm_relative_label";
 
 			x3::rule<class asm_expr, operand_type> const asm_expr = "asm_expr";
 			x3::rule<class asm_grouped_expr, operand_type> const asm_grouped_expr = "asm_grouped_expr";
@@ -299,11 +302,14 @@ namespace oosl{
 			auto const asm_float_decl_value_def = double_;
 
 			auto const asm_string_def = ("'" >> x3::lexeme[*(asm_escaped_symbols_ | ~x3::char_("'"))] >> "'");
-			auto const asm_identifier_def = (!utils::keyword("section") >> !asm_register >> utils_identifier);
 			auto const asm_register_def = utils::keyword(asm_register_symbols_);
+
+			auto const asm_identifier_def = (!utils::keyword("section") >> !asm_register >> utils_identifier);
+			auto const asm_absolute_identifier_def = (asm_identifier >> +('.' >> asm_identifier));
 
 			auto const asm_section_def = (utils::keyword("section") > asm_section_symbols_);
 			auto const asm_label_def = (asm_identifier >> utils::keyword(":"));
+			auto const asm_relative_label_def = (x3::lexeme['.' >> asm_label]);
 
 			auto const asm_expr_def = (asm_non_memory_operand)[asm_parsed_single] >> *(asm_operator_symbols_ >> asm_non_memory_operand)[asm_parsed_expr];
 			auto const asm_grouped_expr_def = ('(' >> asm_expr >> ')')[asm_parsed_grouped_expr];
@@ -315,8 +321,8 @@ namespace oosl{
 			auto const asm_memory_def = ('[' >> asm_expr >> ']');
 			auto const asm_typed_memory_def = (asm_type_symbols_ >> asm_memory);
 
-			auto const asm_operand_def = (asm_float_value | asm_integral_value | asm_register | asm_identifier | asm_memory | asm_typed_memory);
-			auto const asm_non_memory_operand_def = (asm_integral_value | asm_float_value | asm_register | asm_identifier);
+			auto const asm_operand_def = (asm_float_value | asm_integral_value | asm_register | asm_absolute_identifier | asm_identifier | asm_memory | asm_typed_memory);
+			auto const asm_non_memory_operand_def = (asm_integral_value | asm_float_value | asm_register | asm_absolute_identifier | asm_identifier);
 
 			auto const asm_no_operand_def = utils::keyword(asm_no_operand_mnemonic_symbols_);
 			auto const asm_unary_def = (utils::keyword(asm_unary_mnemonic_symbols_) >> asm_operand);
@@ -325,7 +331,7 @@ namespace oosl{
 
 			auto const asm_variadic_decl_def = (utils::keyword(asm_variadic_mnemonic_symbols_) >> (asm_string | asm_grouped_expr_decl | asm_expr_decl) % ",");
 
-			auto const asm_instruction_def = (asm_section | asm_no_operand | asm_unary | asm_binary | asm_ternary | asm_variadic_decl | asm_label);
+			auto const asm_instruction_def = (asm_section | asm_no_operand | asm_unary | asm_binary | asm_ternary | asm_variadic_decl | asm_relative_label | asm_label);
 			auto const asm_instruction_set_def = (*asm_instruction);
 
 			auto const asm_skip_def = (x3::space | (';' >> *x3::omit[(x3::char_ - x3::eol)] >> x3::eol));
@@ -336,10 +342,12 @@ namespace oosl{
 				asm_integral_decl_value,
 				asm_float_decl_value,
 				asm_string,
-				asm_identifier,
 				asm_register,
+				asm_identifier,
+				asm_absolute_identifier,
 				asm_section,
 				asm_label,
+				asm_relative_label,
 				asm_expr,
 				asm_grouped_expr,
 				asm_numeric_operand_decl,

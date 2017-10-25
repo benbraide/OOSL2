@@ -38,6 +38,10 @@ namespace oosl{
 					throw instruction_error::bad_operation;
 				}
 
+				virtual const std::string &absolute_label_value() const{
+					throw instruction_error::bad_operation;
+				}
+
 				virtual void create_or_add_to_section(){
 					assembler::vm::add_instruction(shared_from_this());
 				}

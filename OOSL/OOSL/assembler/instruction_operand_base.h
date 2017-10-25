@@ -77,6 +77,8 @@ namespace oosl{
 				throw instruction_error::ambiguous_operation;
 			}
 
+			virtual void resolve_label(){}
+
 			virtual void print(writer_type &writer) const = 0;
 
 			virtual ptr_type eval(){

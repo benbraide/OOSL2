@@ -11,11 +11,15 @@ namespace oosl{
 		public:
 			explicit identifier_instruction_operand(const std::string &value);
 
+			virtual ~identifier_instruction_operand() = default;
+
 			virtual instruction_operand_type type() const override;
 
 			virtual code_type code() const override;
 
 			virtual size_type instruction_bytes() const override;
+
+			virtual void resolve_label() override;
 
 			virtual void print(writer_type &writer) const override;
 
@@ -79,6 +83,16 @@ namespace oosl{
 			}
 
 			std::string value_;
+			std::string resolved_;
+		};
+
+		class absolute_identifier_instruction_operand : public identifier_instruction_operand{
+		public:
+			explicit absolute_identifier_instruction_operand(const std::string &value);
+
+			virtual ~absolute_identifier_instruction_operand() = default;
+
+			virtual void resolve_label() override;
 		};
 	}
 }

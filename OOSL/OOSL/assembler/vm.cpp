@@ -69,6 +69,10 @@ oosl::assembler::vm::instructions_section_map_type oosl::assembler::vm::instruct
 
 oosl::assembler::instructions_section *oosl::assembler::vm::active_section = nullptr;
 
+oosl::assembler::vm::instruction_type *oosl::assembler::vm::active_label = nullptr;
+
+oosl::assembler::vm::instruction_type *oosl::assembler::vm::active_relative_label = nullptr;
+
 thread_local oosl::assembler::vm::stack_type oosl::assembler::vm::stack;
 
 thread_local oosl::assembler::vm::register_type oosl::assembler::vm::register_;

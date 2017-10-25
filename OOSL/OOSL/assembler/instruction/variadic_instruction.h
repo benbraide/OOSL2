@@ -30,6 +30,12 @@ namespace oosl{
 					return (bytes + 2u);
 				}
 
+				virtual void create_or_add_to_section() override{
+					base::create_or_add_to_section();
+					for (auto item : operands_)
+						item->resolve_label();
+				}
+
 				virtual void print(writer_type &writer) const override{
 					writer.write(id_to_string(id()));
 					writer.write(" ");

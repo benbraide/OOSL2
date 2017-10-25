@@ -10,7 +10,7 @@
 
 int main(){
 	oosl::parser::ast::asm_instruction_set op;
-	std::string gram = "section .text prefix: mov rax, 9 ret main: mov eax, ebp mov eax, rax call prefix xor eax, eax db 'benbraide', 0, 18, 27";
+	std::string gram = "section .text prefix: mov rax, 9 .inner: ret push inner main: push inner push prefix.inner mov eax, ebp mov eax, rax call prefix xor eax, eax db 'benbraide', 0, 18, 27";
 
 	class mini_writer : public oosl::common::writer_base{
 	public:
@@ -37,9 +37,9 @@ int main(){
 	if (r){
 		for (auto &ins : op.value){
 			auto ins_v = oosl::parser::ast::asm_traverser::get(ins);
+			ins_v->create_or_add_to_section();
 			ins_v->print(mini_writer_);
 			mini_writer_.write("\n");
-			ins_v->create_or_add_to_section();
 		}
 
 		oosl::assembler::vm::bundle();

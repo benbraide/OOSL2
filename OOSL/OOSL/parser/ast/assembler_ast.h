@@ -65,11 +65,18 @@ OOSL_AST_DECLARE_SINGLE_WPOS(asm_register, std::string)
 
 using asm_identifier = identifier_ast;
 
+struct asm_absolute_identifier{
+	asm_identifier first;
+	std::vector<asm_identifier> rest;
+};
+
 OOSL_AST_DECLARE_SINGLE_WPOS(asm_mnemonic, oosl::assembler::instruction::id)
 OOSL_AST_DECLARE_SINGLE_WPOS(asm_section, oosl::assembler::section_id)
-OOSL_AST_DECLARE_SINGLE(asm_label, asm_identifier)
 
-OOSL_AST_DECLARE_SINGLE_VARIANT(asm_non_memory_operand, asm_integral_value, asm_float_value, asm_identifier, asm_register)
+OOSL_AST_DECLARE_SINGLE(asm_label, asm_identifier)
+OOSL_AST_DECLARE_SINGLE(asm_relative_label, asm_label)
+
+OOSL_AST_DECLARE_SINGLE_VARIANT(asm_non_memory_operand, asm_integral_value, asm_float_value, asm_identifier, asm_absolute_identifier, asm_register)
 
 OOSL_AST_DECLARE_SINGLE_WPOS(asm_memory, operand_type)
 
@@ -78,7 +85,7 @@ struct asm_typed_memory{
 	asm_memory memory;
 };
 
-OOSL_AST_DECLARE_SINGLE_VARIANT(asm_operand, asm_integral_value, asm_float_value, asm_identifier, asm_register, asm_memory, asm_typed_memory)
+OOSL_AST_DECLARE_SINGLE_VARIANT(asm_operand, asm_integral_value, asm_float_value, asm_identifier, asm_absolute_identifier, asm_register, asm_memory, asm_typed_memory)
 OOSL_AST_DECLARE_SINGLE_VARIANT(asm_numeric_operand_decl, asm_integral_decl_value, asm_float_decl_value)
 
 struct asm_no_operand{
@@ -114,17 +121,10 @@ struct asm_variadic_decl{
 	std::vector<operands_type> operands;
 };
 
-OOSL_AST_DECLARE_SINGLE_VARIANT(asm_instruction, asm_section, asm_label, asm_no_operand, asm_unary, asm_binary, asm_ternary, asm_variadic_decl)
+OOSL_AST_DECLARE_SINGLE_VARIANT(asm_instruction, asm_section, asm_label, asm_relative_label, asm_no_operand, asm_unary, asm_binary, asm_ternary, asm_variadic_decl)
 OOSL_AST_DECLARE_SINGLE(asm_instruction_set, std::vector<asm_instruction>)
 
 struct asm_traverser{
-	static void identifier_to_string(const asm_identifier &ast, std::string &value){
-		value.reserve(ast.rest.size() + 2);
-
-		value.append(1, ast.first);
-		value.append(ast.rest.data(), ast.rest.size());
-	}
-
 	template <typename value_type>
 	static value_type get(const value_type &ast){
 		return ast;
@@ -173,8 +173,21 @@ struct asm_traverser{
 
 	operand_type operator()(const asm_identifier &ast) const{
 		std::string value;
-		identifier_to_string(ast, value);
+		utils::identifier_to_string(ast, value);
 		return std::make_shared<oosl::assembler::identifier_instruction_operand>(value);
+	}
+
+	operand_type operator()(const asm_absolute_identifier &ast) const{
+		std::string value, immediate_value;
+
+		utils::identifier_to_string(ast.first, value);
+		for (auto &item : ast.rest){
+			immediate_value.clear();
+			utils::identifier_to_string(item, immediate_value);
+			value += ("." + immediate_value);
+		}
+
+		return std::make_shared<oosl::assembler::absolute_identifier_instruction_operand>(value);
 	}
 
 	operand_type operator()(const std::string &ast) const{
@@ -207,8 +220,14 @@ struct asm_traverser{
 
 	instruction_type operator()(const asm_label &ast) const{
 		std::string value;
-		identifier_to_string(ast.value, value);
+		utils::identifier_to_string(ast.value, value);
 		return std::make_shared<oosl::assembler::instruction::label>(value);
+	}
+
+	instruction_type operator()(const asm_relative_label &ast) const{
+		std::string value;
+		utils::identifier_to_string(ast.value.value, value);
+		return std::make_shared<oosl::assembler::instruction::relative_label>(value);
 	}
 
 	instruction_type operator()(const asm_no_operand &ast) const{
@@ -355,7 +374,15 @@ OOSL_AST_ADAPT_SINGLE(asm_register)
 
 OOSL_AST_ADAPT_SINGLE(asm_mnemonic)
 OOSL_AST_ADAPT_SINGLE(asm_section)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	oosl::parser::ast::asm_absolute_identifier,
+	(oosl::parser::ast::asm_identifier, first)
+	(std::vector<oosl::parser::ast::asm_identifier>, rest)
+)
+
 OOSL_AST_ADAPT_SINGLE(asm_label)
+OOSL_AST_ADAPT_SINGLE(asm_relative_label)
 
 OOSL_AST_ADAPT_SINGLE(asm_memory)
 
