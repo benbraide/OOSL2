@@ -20,7 +20,7 @@ void oosl::assembler::instructions_section::bundle(){
 
 	vm::instructions.bundle(start_address, map_, label_map_);
 	if (id_ != section_id::text){//Data sections -- allocate memory
-		vm::register_.find("rip")->write_qword(start_address);
+		vm::rip->write_qword(start_address);
 		for (auto &item : map_)//Execute memory instructions
 			item.second->execute_and_update_instruction_pointer();
 	}

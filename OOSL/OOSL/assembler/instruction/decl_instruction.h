@@ -66,7 +66,7 @@ namespace oosl{
 				}
 
 				virtual void execute() const override{
-					auto memory_buffer = assembler::vm::memory.allocate(instruction_bytes_, assembler::vm::register_.find("rip")->read_qword())->data.get();
+					auto memory_buffer = assembler::vm::memory.allocate(instruction_bytes_, assembler::vm::rip->read_qword())->data.get();
 					for (auto item : operands_){//Write operand values
 						item->write(memory_buffer, byte_size);
 						memory_buffer += (item->count(byte_size) * byte_size);//Advance buffer

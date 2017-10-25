@@ -23,11 +23,8 @@ namespace oosl{
 				}
 
 				virtual void execute() const override{
-					auto rip = assembler::vm::register_.find("rip");
-
-					rip->write_qword(rip->read_qword() + instruction_bytes());//Return address is after this instruction
-					rip->push_onto_stack(assembler::vm::stack);
-
+					assembler::vm::rip->write_qword(assembler::vm::rip->read_qword() + instruction_bytes());//Return address is after this instruction
+					assembler::vm::rip->push_onto_stack(assembler::vm::stack);
 					jmp::do_jump(operand_->read_qword());
 				}
 			};

@@ -34,8 +34,6 @@ void oosl::assembler::vm::bundle(){
 }
 
 void oosl::assembler::vm::execute(){
-	static const auto rip = register_.find("rip");
-
 	OOSL_REMOVE(thread_states, vm_state::exit);
 	if (rip->read_qword() == 0u){//Find entry point
 		auto start = instructions.find_label("main");
@@ -76,3 +74,9 @@ oosl::assembler::vm::instruction_type *oosl::assembler::vm::active_relative_labe
 thread_local oosl::assembler::vm::stack_type oosl::assembler::vm::stack;
 
 thread_local oosl::assembler::vm::register_type oosl::assembler::vm::register_;
+
+thread_local oosl::assembler::vm::register_value_type *oosl::assembler::vm::rip = nullptr;
+
+thread_local oosl::assembler::vm::register_value_type *oosl::assembler::vm::rsp = nullptr;
+
+thread_local oosl::assembler::vm::register_value_type *oosl::assembler::vm::rbp = nullptr;

@@ -28,7 +28,7 @@ namespace oosl{
 				}
 
 				static void do_jump(instruction_operand_base::qword_type address){
-					assembler::vm::register_.find("rip")->write_qword(address);
+					assembler::vm::rip->write_qword(address);
 				}
 
 			protected:

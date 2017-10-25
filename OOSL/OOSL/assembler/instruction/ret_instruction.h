@@ -23,7 +23,7 @@ namespace oosl{
 				}
 
 				virtual void execute() const override{
-					assembler::vm::register_.find("rip")->pop_from_stack(assembler::vm::stack);
+					assembler::vm::rip->pop_from_stack(assembler::vm::stack);
 				}
 			};
 		}

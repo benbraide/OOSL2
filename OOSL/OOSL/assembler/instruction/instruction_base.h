@@ -48,8 +48,7 @@ namespace oosl{
 
 				virtual void execute_and_update_instruction_pointer() const{
 					execute();
-					auto rip = assembler::vm::register_.find("rip");
-					rip->write_qword(rip->read_qword() + instruction_bytes());//Advance Instruction Pointer
+					assembler::vm::rip->write_qword(assembler::vm::rip->read_qword() + instruction_bytes());//Advance Instruction Pointer
 				}
 
 				virtual void execute() const = 0;

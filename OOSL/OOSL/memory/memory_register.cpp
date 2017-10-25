@@ -1,3 +1,4 @@
+#include "../assembler/vm.h"
 #include "memory_register.h"
 
 oosl::memory::register_::register_()
@@ -18,6 +19,10 @@ oosl::memory::register_::register_()
 	add_float_<float>("f", 0, 3);
 	add_float_<double>("fd", 0, 3);
 	add_float_<long double>("fld", 0, 3);
+
+	oosl::assembler::vm::rip = find("rip");
+	oosl::assembler::vm::rsp = find("rsp");
+	oosl::assembler::vm::rbp = find("rbp");
 }
 
 oosl::memory::register_value_base *oosl::memory::register_::find(std::string key) const{

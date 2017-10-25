@@ -22,8 +22,10 @@ namespace oosl{
 			typedef std::size_t size_type;
 
 			typedef oosl::memory::stack stack_type;
-			typedef oosl::memory::register_ register_type;
 			typedef oosl::memory::collection memory_type;
+
+			typedef oosl::memory::register_ register_type;
+			typedef oosl::memory::register_value_base register_value_type;
 
 			typedef instruction::base instruction_type;
 			typedef std::shared_ptr<instruction_type> instruction_ptr_type;
@@ -55,6 +57,10 @@ namespace oosl{
 
 			static thread_local stack_type stack;
 			static thread_local register_type register_;
+
+			static thread_local register_value_type *rip;//Instruction Pointer
+			static thread_local register_value_type *rsp;//Stack Pointer
+			static thread_local register_value_type *rbp;//Base Pointer
 		};
 
 		OOSL_MAKE_OPERATORS(vm_state);
