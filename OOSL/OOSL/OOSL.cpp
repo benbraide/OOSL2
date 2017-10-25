@@ -10,7 +10,7 @@
 
 int main(){
 	oosl::parser::ast::asm_instruction_set op;
-	std::string gram = "section .text prefix: mov rax, 9 .inner: ret main: mov eax, ebp mov eax, rax call prefix xor eax, eax db 'benbraide', 0, 18, 27 mov eax, 1 mov ebx, 9 int 128";
+	std::string gram = "section .text prefix: mov rax, 9 .inner: ret main: mov eax, ebp mov eax, rax call prefix xor eax, eax db 'benbraide', 0, 18, 27 mov eax, 1 mov ebx, 9 int 0x80";
 
 	class mini_writer : public oosl::common::writer_base{
 	public:

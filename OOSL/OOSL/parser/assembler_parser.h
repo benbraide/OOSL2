@@ -295,10 +295,13 @@ namespace oosl{
 				x3::_val(ctx) = std::make_shared<oosl::assembler::instruction::grouped_expr_decl_operand>(x3::_attr(ctx));
 			};
 
-			auto const asm_integral_value_def = x3::long_long;
+			signed_hex_parser<long long> const long_long_hex = {};
+			signed_bin_parser<long long> const long_long_bin = {};
+
+			auto const asm_integral_value_def = (x3::lexeme["0x" >> long_long_hex] | x3::lexeme[long_long_hex >> 'h'] | x3::lexeme[long_long_bin >> 'b'] | x3::ulong_long);
 			auto const asm_float_value_def = double_;
 
-			auto const asm_integral_decl_value_def = x3::long_long;
+			auto const asm_integral_decl_value_def = (x3::lexeme["0x" >> long_long_hex] | x3::lexeme[long_long_hex >> 'h'] | x3::lexeme[long_long_bin >> 'b'] | x3::ulong_long);
 			auto const asm_float_decl_value_def = double_;
 
 			auto const asm_string_def = ("'" >> x3::lexeme[*(asm_escaped_symbols_ | ~x3::char_("'"))] >> "'");

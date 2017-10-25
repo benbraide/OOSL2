@@ -50,6 +50,15 @@ namespace oosl{
 		x3::rule<class utils_identifier, identifier_ast> const utils_identifier = "utils_identifier";
 		auto const utils_identifier_def = x3::lexeme[x3::char_("$_A-Za-z") >> *x3::char_("$_A-Za-z0-9")];
 
+		template <typename target_type>
+		using signed_hex_parser = x3::uint_parser<target_type, 16>;
+
+		template <typename target_type>
+		using signed_oct_parser = x3::uint_parser<target_type, 8>;
+
+		template <typename target_type>
+		using signed_bin_parser = x3::uint_parser<target_type, 2>;
+
 		BOOST_SPIRIT_DEFINE(utils_identifier);
 	}
 }
