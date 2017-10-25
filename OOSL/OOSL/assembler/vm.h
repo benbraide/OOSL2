@@ -6,6 +6,8 @@
 #include "../memory/memory_register.h"
 #include "../memory/memory_collection.h"
 
+#include "interrupt/interrupt_handlers.h"
+
 #include "instruction_set.h"
 #include "instructions_section.h"
 
@@ -27,7 +29,9 @@ namespace oosl{
 			typedef oosl::memory::register_ register_type;
 			typedef oosl::memory::register_value_base register_value_type;
 
+			typedef interrupt::handlers interrupt_handlers_type;
 			typedef instruction::base instruction_type;
+
 			typedef std::shared_ptr<instruction_type> instruction_ptr_type;
 			typedef std::shared_ptr<instructions_section> instructions_section_ptr_type;
 			typedef std::unordered_map<section_id, instructions_section_ptr_type> instructions_section_map_type;
@@ -42,12 +46,16 @@ namespace oosl{
 
 			static void execute();
 
+			static void exit(int code);
+
+			static int exit_code;
 			static vm_state global_states;
 			static thread_local vm_state thread_states;
 
 			static size_type stack_size;
 			static memory_type memory;
 
+			static interrupt_handlers_type interrupt_handlers;
 			static instructions_set instructions;
 			static instructions_section_map_type instructions_section_map;
 

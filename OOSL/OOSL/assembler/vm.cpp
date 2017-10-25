@@ -55,6 +55,13 @@ void oosl::assembler::vm::execute(){
 	}
 }
 
+void oosl::assembler::vm::exit(int code){
+	exit_code = code;
+	OOSL_SET(global_states, vm_state::exit);
+}
+
+int oosl::assembler::vm::exit_code = 0;
+
 oosl::assembler::vm_state oosl::assembler::vm::global_states = vm_state::nil;
 
 thread_local oosl::assembler::vm_state oosl::assembler::vm::thread_states = vm_state::nil;
@@ -62,6 +69,8 @@ thread_local oosl::assembler::vm_state oosl::assembler::vm::thread_states = vm_s
 oosl::assembler::vm::size_type oosl::assembler::vm::stack_size = (1024 * 1024);//Default size is 1MB
 
 oosl::assembler::vm::memory_type oosl::assembler::vm::memory;
+
+oosl::assembler::vm::interrupt_handlers_type oosl::assembler::vm::interrupt_handlers;
 
 oosl::assembler::instructions_set oosl::assembler::vm::instructions;
 

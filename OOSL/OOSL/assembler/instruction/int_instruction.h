@@ -3,8 +3,6 @@
 #ifndef OOSL_INT_INSTRUCTION_H
 #define OOSL_INT_INSTRUCTION_H
 
-#include "../vm.h"
-
 #include "unary_instruction.h"
 
 namespace oosl{
@@ -20,8 +18,12 @@ namespace oosl{
 					return id_type::int_;
 				}
 
+				virtual size_type instruction_bytes() const override{
+					return 6u;
+				}
+
 				virtual void execute() const override{
-					//#TODO: Implement
+					assembler::vm::interrupt_handlers.handle(operand_->read_dword());
 				}
 			};
 		}
