@@ -46,6 +46,8 @@ namespace oosl{
 					assembler::vm::add_instruction(shared_from_this());
 				}
 
+				virtual void resolve_constant(){}
+
 				virtual void execute_and_update_instruction_pointer() const{
 					execute();
 					assembler::vm::rip->write_qword(assembler::vm::rip->read_qword() + instruction_bytes());//Advance Instruction Pointer

@@ -15,6 +15,10 @@ oosl::assembler::instruction_operand_base::size_type oosl::assembler::grouped_ex
 	return value_->instruction_bytes();
 }
 
+void oosl::assembler::grouped_expression_instruction_operand::resolve_constant(){
+	value_->resolve_constant();
+}
+
 void oosl::assembler::grouped_expression_instruction_operand::print(writer_type &writer) const{
 	writer.write("(");
 	value_->print(writer);

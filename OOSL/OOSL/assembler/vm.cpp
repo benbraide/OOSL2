@@ -31,6 +31,8 @@ void oosl::assembler::vm::bundle(){
 
 	if ((section = find_section(section_id::text)) != nullptr)//Executable
 		section->bundle();
+
+	instructions.resolve_constant();
 }
 
 void oosl::assembler::vm::execute(){

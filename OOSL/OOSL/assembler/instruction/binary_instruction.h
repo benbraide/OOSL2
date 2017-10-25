@@ -33,9 +33,13 @@ namespace oosl{
 					right_->resolve_label();
 				}
 
+				virtual void resolve_constant() override{
+					left_->resolve_constant();
+					right_->resolve_constant();
+				}
+
 				virtual void print(writer_type &writer) const override{
-					writer.write(id_to_string(id()));
-					writer.write(" ");
+					writer.write(id_to_string(id())).write(" ");
 					left_->print(writer);
 					writer.write(", ");
 					right_->print(writer);

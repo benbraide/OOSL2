@@ -10,7 +10,7 @@ void oosl::assembler::instructions_section::add(instruction_ptr_type instruction
 		next_ += instruction->instruction_bytes();
 	}
 	else//Label
-		label_map_[next_] = instruction;
+		label_map_[instruction] = next_;
 }
 
 void oosl::assembler::instructions_section::bundle(){

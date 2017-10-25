@@ -21,6 +21,8 @@ namespace oosl{
 
 			virtual void resolve_label() override;
 
+			virtual void resolve_constant() override;
+
 			virtual void print(writer_type &writer) const override;
 
 			virtual ptr_type apply_operator(operator_type op, instruction_operand_base &rhs) override;
@@ -39,7 +41,7 @@ namespace oosl{
 
 			virtual long double read_ldouble() const override;
 
-		private:
+		protected:
 			qword_type read_() const;
 
 			template <typename value_type>
@@ -84,6 +86,7 @@ namespace oosl{
 
 			std::string value_;
 			std::string resolved_;
+			qword_type target_;
 		};
 
 		class absolute_identifier_instruction_operand : public identifier_instruction_operand{

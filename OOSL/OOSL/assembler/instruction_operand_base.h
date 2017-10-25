@@ -79,6 +79,8 @@ namespace oosl{
 
 			virtual void resolve_label(){}
 
+			virtual void resolve_constant(){}
+
 			virtual void print(writer_type &writer) const = 0;
 
 			virtual ptr_type eval(){

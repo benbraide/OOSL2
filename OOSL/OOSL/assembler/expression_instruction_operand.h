@@ -17,6 +17,8 @@ namespace oosl{
 
 			virtual size_type instruction_bytes() const override;
 
+			virtual void resolve_constant() override;
+
 			virtual void print(writer_type &writer) const override;
 
 			virtual ptr_type eval() override;
@@ -43,6 +45,7 @@ namespace oosl{
 			operator_type op_;
 			ptr_type left_;
 			ptr_type right_;
+			ptr_type value_;
 		};
 	}
 }

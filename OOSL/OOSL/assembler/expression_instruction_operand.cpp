@@ -15,6 +15,13 @@ oosl::assembler::instruction_operand_base::size_type oosl::assembler::expression
 	return left_->instruction_bytes();
 }
 
+void oosl::assembler::expression_instruction_operand::resolve_constant(){
+	if ((left_->type() == instruction_operand_type::constant_value || left_->type() == instruction_operand_type::identifier) &&
+		(right_->type() == instruction_operand_type::constant_value || right_->type() == instruction_operand_type::identifier)){
+		value_ = left_->apply_operator(op_, *right_);//Cache result of constant expression
+	}
+}
+
 void oosl::assembler::expression_instruction_operand::print(writer_type &writer) const{
 	left_->print(writer);
 	switch (op_){
@@ -91,5 +98,5 @@ long double oosl::assembler::expression_instruction_operand::read_ldouble() cons
 }
 
 oosl::assembler::instruction_operand_base::ptr_type oosl::assembler::expression_instruction_operand::eval_() const{
-	return left_->apply_operator(op_, *right_);
+	return ((value_ == nullptr) ? left_->apply_operator(op_, *right_) : value_);
 }

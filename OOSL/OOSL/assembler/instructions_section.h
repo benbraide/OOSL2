@@ -22,8 +22,11 @@ namespace oosl{
 		public:
 			typedef unsigned __int64 uint64_type;
 
-			typedef std::shared_ptr<instruction::base> instruction_ptr_type;
+			typedef instruction::base instruction_type;
+			typedef std::shared_ptr<instruction_type> instruction_ptr_type;
+
 			typedef std::unordered_map<uint64_type, instruction_ptr_type> map_type;
+			typedef std::unordered_map<instruction_ptr_type, uint64_type> alt_map_type;
 
 			explicit instructions_section(section_id id);
 
@@ -39,7 +42,7 @@ namespace oosl{
 			section_id id_;
 			uint64_type next_;
 			map_type map_;
-			map_type label_map_;
+			alt_map_type label_map_;
 		};
 	}
 }
