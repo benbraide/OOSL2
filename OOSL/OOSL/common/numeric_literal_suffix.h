@@ -14,9 +14,9 @@ namespace oosl{
 			uint32,
 			int64,
 			uint64,
-			float32,
-			float64,
-			float128,
+			float_,
+			double_,
+			long_double_,
 		};
 	}
 }

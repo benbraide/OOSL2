@@ -34,7 +34,9 @@ namespace oosl{
 
 			typedef std::shared_ptr<instruction_type> instruction_ptr_type;
 			typedef std::shared_ptr<instructions_section> instructions_section_ptr_type;
+
 			typedef std::unordered_map<section_id, instructions_section_ptr_type> instructions_section_map_type;
+			typedef std::unordered_map<section_id, std::vector<instruction_ptr_type>> static_instructions_section_map_type;
 
 			static void set_section(section_id id);
 
@@ -57,7 +59,9 @@ namespace oosl{
 
 			static interrupt_handlers_type interrupt_handlers;
 			static instructions_set instructions;
+
 			static instructions_section_map_type instructions_section_map;
+			static static_instructions_section_map_type static_instructions_section_map;
 
 			static instructions_section *active_section;
 			static instruction_type *active_label;

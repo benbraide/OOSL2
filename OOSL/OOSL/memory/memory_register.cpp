@@ -15,10 +15,7 @@ oosl::memory::register_::register_()
 	add_("rip", "r8", "eip", "ip", "", "");
 
 	add_qword_(9, 15);
-
-	add_float_<float>("f", 0, 3);
-	add_float_<double>("fd", 0, 3);
-	add_float_<long double>("fld", 0, 3);
+	add_float_<long double>("xmm", 0, 7);
 
 	oosl::assembler::vm::rip = find("rip");
 	oosl::assembler::vm::rsp = find("rsp");

@@ -1,12 +1,8 @@
 #include <iostream>
 
-#include "memory/memory_collection.h"
-#include "memory/memory_register.h"
-
-#include "parser/ast/literal_ast.h"
-#include "parser/ast/constant_value_ast.h"
-
 #include "parser/assembler_parser.h"
+#include "parser/constant_value_parser.h"
+#include "parser/literal_parser.h"
 
 int main(){
 	oosl::parser::ast::asm_instruction_set op;

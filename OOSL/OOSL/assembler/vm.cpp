@@ -76,6 +76,8 @@ oosl::assembler::instructions_set oosl::assembler::vm::instructions;
 
 oosl::assembler::vm::instructions_section_map_type oosl::assembler::vm::instructions_section_map;
 
+oosl::assembler::vm::static_instructions_section_map_type oosl::assembler::vm::static_instructions_section_map;
+
 oosl::assembler::instructions_section *oosl::assembler::vm::active_section = nullptr;
 
 oosl::assembler::vm::instruction_type *oosl::assembler::vm::active_label = nullptr;
